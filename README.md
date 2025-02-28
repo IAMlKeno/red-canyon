@@ -17,15 +17,40 @@ Project structure:
 ```
 
 [_compose.yaml_](compose.yaml)
-```
+```yaml
+networks:
+  redcanyon-net:
+    driver: bridge
+
 services:
   web:
-    build: vuejs
+    build:
+      context: vuejs
+      target: development
     ports:
-    - 80:8080
+      - 8080:8080
     volumes:
-    - ./vuejs:/project
-    - /project/node_modules
+      - ./vuejs:/project
+      - /project/node_modules
+    networks:
+      - redcanyon-net
+  server:
+    ports:
+      - 4200:4200
+    volumes:
+      - ./server:/project
+    build:
+      context: ./server
+      dockerfile_inline: |
+        FROM node:22-bookworm-slim
+        WORKDIR /project
+        COPY package.json package-lock.json /project/
+        RUN pwd
+        RUN ls .
+        RUN npm install
+    command: npm run dev -- --host=0.0.0.0
+    networks:
+      - redcanyon-net
 ```
 The compose file defines an application with two services `vuejs` and `expressjs` application.
 When deploying the application, docker compose maps port 8080 of the `web` container and 4200 of the `server` container to ports 8080 and 4200, respectively of the host as specified in the file.
