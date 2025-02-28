@@ -1,11 +1,16 @@
-## Compose sample application
-### VueJS 
+# Project Red Canyon
+
+### Local Dev
+Under development this project was built using [Docker compose](https://docs.docker.com/compose/).
+
+### The Project Structure
 
 Project structure:
 ```
 .
 ├── compose.yaml
 ├── README.md
+├── server
 └── vuejs
     ├── Dockerfile
     └── ...
@@ -22,40 +27,35 @@ services:
     - ./vuejs:/project
     - /project/node_modules
 ```
-The compose file defines an application with one service `vuejs`.
-When deploying the application, docker compose maps port 8080 of the web service container to port 8080 of the host as specified in the file.
-Make sure port 8080 on the host is not already being in use.
+The compose file defines an application with two services `vuejs` and `expressjs` application.
+When deploying the application, docker compose maps port 8080 of the `web` container and 4200 of the `server` container to ports 8080 and 4200, respectively of the host as specified in the file.
+Make sure port 8080 and 4200 on the host are not already being in use.
 
-## Deploy with docker compose
+## Running the application with docker compose
 
-```
-$ docker compose up -d
-Creating network "vuejs_default" with the default driver
-Building web
-Step 1/8 : FROM node:13.10.1-alpine
-...
-Successfully tagged vuejs_web:latest
-WARNING: Image for service web was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
-Creating vuejs_web_1 ... done
-```
+1. Navigate to the server directory and run `npm install`
+2. Use `docker compose up` to run the application, you can add the `-d` flag to run in detached mode.
 
 ## Expected result
 
 Listing containers must show one container running and the port mapping as below:
 ```
 $ docker ps
-CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
-701c02bb97b1        vuejs_web           "docker-entrypoint.s…"   49 seconds ago      Up 46 seconds       0.0.0.0:80->8080/tcp   vuejs_web_1
+CONTAINER ID   IMAGE               COMMAND                  CREATED             STATUS             PORTS                    NAMES
+f6bfe9f6dabb   red-canyon-server   "docker-entrypoint.s…"   About an hour ago   Up About an hour   0.0.0.0:4200->4200/tcp   red-canyon-server-1
+07a0da09e9a2   red-canyon-web      "docker-entrypoint.s…"   2 hours ago         Up About an hour   0.0.0.0:8080->8080/tcp   red-canyon-web-1
 ```
 
 After the application starts, navigate to `http://localhost:80` in your web browser.
 
 ![page](output.jpg)
 
-Stop and remove the containers
+#### Stop and remove the containers
+If the server was run in detached mode:
+
 ```
 $ docker compose down
-Stopping vuejs_web_1 ... done
-Removing vuejs_web_1 ... done
-Removing network vuejs_default
+[+] Stopping 2/2
+ ✔ Container red-canyon-server-1  Stopped
+ ✔ Container red-canyon-web-1     Stopped
 ```
