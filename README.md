@@ -3,6 +3,10 @@
 ### Local Dev
 Under development this project was built using [Docker compose](https://docs.docker.com/compose/).
 
+#### Requirements
+* Docker compose
+* Node
+
 ### The Project Structure
 
 Project structure:
@@ -71,7 +75,7 @@ f6bfe9f6dabb   red-canyon-server   "docker-entrypoint.s…"   About an hour ago 
 07a0da09e9a2   red-canyon-web      "docker-entrypoint.s…"   2 hours ago         Up About an hour   0.0.0.0:8080->8080/tcp   red-canyon-web-1
 ```
 
-After the application starts, navigate to `http://localhost:80` in your web browser.
+After the application starts, navigate to `http://localhost:8080` in your web browser.
 
 ![page](output.jpg)
 
