@@ -1,0 +1,24 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Server for the Go Deeper app",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.mjs",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "format": "prettier --single-quote --check .",
+    "dev": "nodemon --experimental-modules app.mjs"
+  },
+  "author": "Elkeno Jones",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-async-errors": "^3.1.1",
+    "husky": "^9.1.7",
+    "mongodb": "^6.13.0",
+    "nodemon": "^3.1.9"
+  }
+}
