@@ -1,9 +1,7 @@
 import express from "express";
-import GenericService from "../interfaces/generic-service.mjs";
-// import { ObjectId } from "mongodb";
-import itineryTypes from "../static/data/itinerary.mjs";
-import suggestions from "../static/data/suggestions.mjs";
-import generateANumber from "../utils/utilMath.mjs";
+import itineryTypes from "../static/data/itinerary.js";
+import suggestions from "../static/data/suggestions.js";
+import generateANumber from "../utils/utilMath.js";
 
 const router = express.Router();
 const table = 'places';
@@ -15,13 +13,13 @@ router.get('/types', async (req, res) => {
 });
 
 router.get('/types/:id', async (req, res) => {
-  let type = itineryTypes.find(item => item.id == req.params.id);
+  let type = itineryTypes.find(item => item.id.toString() == req.params.id);
   res.send(type).status(200);
 });
 
 router.get('/suggestion/:placeType', async (req, res) => {
   let type = req.params.placeType;
-  let typeName = (itineryTypes.find(item => item.id == type)).name;
+  let typeName = (itineryTypes.find(item => item.id.toString() == type)).name;
   console.log(`Type name chosen: ${typeName}`);
   let n = generateANumber(4);
   console.log(`Number gen'd: ${n}`);

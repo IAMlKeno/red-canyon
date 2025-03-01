@@ -1,22 +1,23 @@
-import express from "express";
 import cors from "cors";
-import "./loadEnvironment.mjs";
+import dotenv from "dotenv";
+import express, { Express, Request, Response } from "express";
+import places from "./routes/places";
 import "express-async-errors";
-import places from "./routes/places.mjs";
-// import sermons from "./routes/sermons.mjs";
-// import tags from "./routes/tags.mjs";
-// import users from "./routes/users.mjs";
 
 const port = process.env.PORT || 4200
-const app = express();
+const app: Express = express();
 
+dotenv.config();
 app.use(cors());
 app.use(express.json());
 
 app.use('/places', places);
 
 // Index page.
-app.get('/', (req, res) => res.send('Hello world!'))
+app.get('/', (req: Request, res: Response) => {
+  res.send('Hello world!');
+})
+
 
 // Error handler.
 app.use((err, _req, res, next) => {
