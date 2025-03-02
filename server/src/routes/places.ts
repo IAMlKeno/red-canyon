@@ -1,33 +1,41 @@
 import express from "express";
-import itineryTypes from "../static/data/itinerary.js";
-import suggestions from "../static/data/suggestions.js";
-import generateANumber from "../utils/utilMath.js";
+import { ItineraryService } from "../controllers/ItineraryService";
+import { ItineraryThingInterface } from "../interfaces/ItineraryThingInterface";
 
 const router = express.Router();
-const table = 'places';
-// const service = new GenericService(table);
+const service: ItineraryThingInterface = new ItineraryService();
 
 // Get types
 router.get('/types', async (req, res) => {
-  res.send(itineryTypes).status(200);
+  let results = service.getItineraryTypes();
+
+  if (results.length > 0) res.send(results).status(200);
+  else res.send('No types found').status(404);
 });
 
 router.get('/types/:id', async (req, res) => {
-  let type = itineryTypes.find(item => item.id.toString() == req.params.id);
-  res.send(type).status(200);
+  let type = service.getItineraryTypeById(req.params.id);
+
+  if (type == undefined) res.send('NO RESULTS').status(404);
+  else res.send(type).status(200);
 });
 
 router.get('/suggestion/:placeType', async (req, res) => {
   let type = req.params.placeType;
-  let typeName = (itineryTypes.find(item => item.id.toString() == type)).name;
-  console.log(`Type name chosen: ${typeName}`);
-  let n = generateANumber(4);
-  console.log(`Number gen'd: ${n}`);
-  let suggestion = suggestions.find(item => item.id == n);
+  console.log(type);
+  if (type == undefined || type == ':placeType') {
+    res.send("Itinerary type required").status(400);
+    return;
+  }
 
-  res.send(suggestion).status(200);
+  try {
+    let typeName = service.getItineraryTypeById(type);
+    let suggestion = service.getAnItineraryByType(typeName)
+
+    res.send(suggestion).status(200);
+  } catch (e) {
+    res.send('BAD REQUEST').status(500);
+  }
 });
-
-
 
 export default router;
