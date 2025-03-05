@@ -4,25 +4,27 @@ import { ref } from 'vue'
 const props = defineProps<{
   test: string,
   types: any,
-  // data: any|undefined,
 }>()
 
 let data = ref([]);
 
 async function fetchItineraryTypes() {
   try {
-   data = await (await fetch("http://localhost:4200/places/types")).json()
-    // data = (await fetch("http://red-canyon-server-1:4200/places/types"))
-   console.log('DATA')
-   console.log(data)
+    data = await (await fetch("http://localhost:4200/places/types")).json()
+    const rows = document.querySelectorAll("tr[class=type-row]")
+      rows.forEach(row => {
+      row.addEventListener("click", (e) => console.log('clicked'));
+    });
   } catch (e) {
     console.log(`ERROR FETCHING TYPES: ${e}`)
   }
 }
 await fetchItineraryTypes()
 
-// console.log('props.data');
-// console.log(props.data);
+function uclick(evt) {
+  const rowId = evt.target.parentElement.querySelector('td[class=type-id]').dataset.typeId
+  console.log(`row id: ${rowId}`)
+}
 </script>
 
 <template>
@@ -37,8 +39,8 @@ await fetchItineraryTypes()
           <th>Description</th>
         </tr>
       </thead>
-      <tr v-for="type in data">
-        <td class="type-id">{{ type.id }}</td>
+      <tr v-for="type in data" class="type-row clickable" @click="uclick">
+        <td class="type-id" v-bind:data-type-id="type.id">{{ type.id }}</td>
         <td class="type-name">{{ type.name }}</td>
         <td class="type-description">{{ type.description }}</td>
       </tr>
@@ -53,5 +55,8 @@ await fetchItineraryTypes()
   .type-description {
     border: 2px solid red;
     text-align: center;
+  }
+  .clickable:hover {
+    cursor: pointer;
   }
 </style>
