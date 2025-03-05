@@ -1,4 +1,4 @@
-export const projectName = "Red Canyon";
-export const welcomeMsg = `Welcome to ${projectName}`;
+export const projectName = "PEI Itinerary Planner";
+export const welcomeMsg = `Welcome to the ${projectName}`;
 export const subtitle = 'Brought to you by Avanti Insieme';
 export const itSuggestionHeading = 'Your Itinerary Suggestion';

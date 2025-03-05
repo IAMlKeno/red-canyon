@@ -17,16 +17,23 @@ async function fetchItineraryTypes() {
 }
 await fetchItineraryTypes()
 
-async function uclick(evt) {
-  const rowId = evt.target.parentElement.querySelector('td[class=type-id]').dataset.typeId
-  console.log(`row id: ${rowId}`)
-  console.log(suggestionLoading.value)
+function handleRowClick(evt) {
+  const tar = evt.target;
+  if (tar.tagName.toLowerCase() !== 'button') {
+    const rowId = tar.parentElement.querySelector('td[class=type-id]').dataset.typeId;
+    handleFetchSuggestion(rowId);
+  }
+}
 
-  suggestionLoading.value = true
-  suggestion.value = await (await fetch(`${api}/places/suggestion/${rowId}`)).json()
+function handleBtnClick(id) {
+  event.preventDefault();
+  handleFetchSuggestion(id);
+}
 
-  suggestionLoading.value = false
-  console.log(suggestion)
+async function handleFetchSuggestion(itineraryTypeId: string) {
+  suggestionLoading.value = true;
+  suggestion.value = await (await fetch(`${api}/places/suggestion/${itineraryTypeId}`)).json();
+  suggestionLoading.value = false;
 }
 </script>
 
@@ -40,12 +47,14 @@ async function uclick(evt) {
           <th>ID</th>
           <th>Value</th>
           <th>Description</th>
+          <th><i class="material-icons">info_outline</i></th>
         </tr>
       </thead>
-      <tr v-for="type in data" class="type-row clickable" @click="uclick">
+      <tr v-for="type in data" class="type-row clickable" @click="handleRowClick">
         <td class="type-id" v-bind:data-type-id="type.id">{{ type.id }}</td>
         <td class="type-name">{{ type.name }}</td>
         <td class="type-description">{{ type.description }}</td>
+        <td class="type-action"><button class="btn button" @click="handleBtnClick(type.id)">Get an Itinerary</button></td>
       </tr>
     </table>
   </div>
