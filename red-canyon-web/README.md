@@ -1,6 +1,6 @@
-# red-canyon-web
+# Red Canyon [Web]
 
-This template should help get you started developing with Vue 3 in Vite.
+This is the frontend implementation of the Red Canyon project. It uses Vuejs 3 and Vite.
 
 ## Recommended IDE Setup
 
@@ -15,6 +15,9 @@ TypeScript cannot handle type information for `.vue` imports by default, so we r
 See [Vite Configuration Reference](https://vite.dev/config/).
 
 ## Project Setup
+Copy the sample.env file to .env and update the properties appropriately.
+
+What follows is to run the Vuejs project outside of the Docker infrastucture.
 
 ```sh
 npm install
