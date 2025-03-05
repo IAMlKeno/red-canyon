@@ -14,6 +14,8 @@ let types = ref([
 
 <template>
   <main>
-    <ItineraryTypes :test="test" :types="types" />
+    <Suspense>
+      <ItineraryTypes :test="test" :types="types" />
+    </Suspense>
   </main>
 </template>
