@@ -5,12 +5,12 @@ networks:
 services:
   web:
     build:
-      context: vuejs
+      context: red-canyon-web
       target: development
     ports:
-      - 8080:8080
+      - 5173:5173
     volumes:
-      - ./vuejs:/project
+      - ./red-canyon-web:/project
       - /project/node_modules
     networks:
       - redcanyon-net

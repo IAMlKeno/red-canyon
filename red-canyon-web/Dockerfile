@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:1.4
-FROM --platform=$BUILDPLATFORM node:14.4.0-alpine AS development
+# FROM --platform=$BUILDPLATFORM node:14.4.0-alpine AS development
+FROM --platform=$BUILDPLATFORM node:22-bookworm-slim AS development
 
 RUN mkdir /project
 WORKDIR /project
@@ -7,14 +8,15 @@ WORKDIR /project
 COPY . .
 
 RUN yarn global add @vue/cli
-RUN yarn install
+RUN npm install
 ENV HOST=0.0.0.0
-CMD ["yarn", "run", "serve"]
+EXPOSE 5173
+CMD ["npm", "run", "dev" ]
 
 FROM development as dev-envs
 RUN <<EOF
-apk update
-apk add git
+apt update
+apt add git
 EOF
 
 RUN <<EOF
@@ -23,5 +25,5 @@ adduser -S --shell /bin/bash --ingroup docker vscode
 EOF
 # install Docker tools (cli, buildx, compose)
 COPY --from=gloursdocker/docker / /
-CMD ["yarn", "run", "serve"]
+CMD ["npm", "run", "dev" ]
 
