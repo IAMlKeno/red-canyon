@@ -15,7 +15,7 @@ Project structure:
 ├── compose.yaml
 ├── README.md
 ├── server
-└── vuejs
+└── red-canyon-web
     ├── Dockerfile
     └── ...
 ```
@@ -28,42 +28,45 @@ networks:
 
 services:
   web:
+    container_name: vue-web
     build:
-      context: vuejs
+      context: red-canyon-web
       target: development
     ports:
-      - 8080:8080
+      - 5173:5173
     volumes:
-      - ./vuejs:/project
+      - ./red-canyon-web:/project
       - /project/node_modules
     networks:
       - redcanyon-net
   server:
+    container_name: places-api
     ports:
       - 4200:4200
+    expose:
+      - 4200
     volumes:
       - ./server:/project
     build:
       context: ./server
       dockerfile_inline: |
         FROM node:22-bookworm-slim
+        RUN mkdir /project
         WORKDIR /project
-        COPY package.json package-lock.json /project/
-        RUN pwd
-        RUN ls .
+        COPY . .
         RUN npm install
     command: npm run dev -- --host=0.0.0.0
     networks:
       - redcanyon-net
 ```
-The compose file defines an application with two services `vuejs` and `expressjs` application.
-When deploying the application, docker compose maps port 8080 of the `web` container and 4200 of the `server` container to ports 8080 and 4200, respectively of the host as specified in the file.
-Make sure port 8080 and 4200 on the host are not already being in use.
+The compose file defines an application with two services `web` and `server` application with container names `vue-web` and `places-api` respectively.
+When deploying the application, docker compose maps port 5173 of the `vue-web` container and 4200 of the `places-api` container to ports 5173 and 4200, respectively of the host as specified in the file.
+Make sure that these ports on the host are not already in use before running.
 
 ## Running the application with docker compose
 
 1. Navigate to the server directory and run `npm install`
-2. Use `docker compose up` to run the application, you can add the `-d` flag to run in detached mode.
+2. In the root directory, use `docker compose up` to run the application, you can add the `-d` flag to run in detached mode.
 
 ## Expected result
 
@@ -71,11 +74,11 @@ Listing containers must show one container running and the port mapping as below
 ```
 $ docker ps
 CONTAINER ID   IMAGE               COMMAND                  CREATED             STATUS             PORTS                    NAMES
-f6bfe9f6dabb   red-canyon-server   "docker-entrypoint.s…"   About an hour ago   Up About an hour   0.0.0.0:4200->4200/tcp   red-canyon-server-1
-07a0da09e9a2   red-canyon-web      "docker-entrypoint.s…"   2 hours ago         Up About an hour   0.0.0.0:8080->8080/tcp   red-canyon-web-1
+f6bfe9f6dabb   red-canyon-server   "docker-entrypoint.s…"   About an hour ago   Up About an hour   0.0.0.0:4200->4200/tcp   places-api
+07a0da09e9a2   red-canyon-web      "docker-entrypoint.s…"   2 hours ago         Up About an hour   0.0.0.0:5173->5173/tcp   vue-web
 ```
 
-After the application starts, navigate to `http://localhost:8080` in your web browser.
+After the application starts, navigate to `http://localhost:5173` in your web browser.
 
 ![page](output.jpg)
 
