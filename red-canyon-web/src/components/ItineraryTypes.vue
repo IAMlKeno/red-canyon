@@ -39,22 +39,23 @@ async function handleFetchSuggestion(itineraryTypeId: string) {
 
 <template>
   <div class="it-card">
-    <h2 class="it-header">Itinerary Type Card</h2>
+    <h2 class="it-header">Itinerary Planner</h2>
+    <h5 class="it-sub-header">Pick an itinerary type to get started!</h5>
     <hr />
-    <table>
+    <table class="table it-table">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Value</th>
-          <th>Description</th>
-          <th><i class="material-icons">info_outline</i></th>
+          <th>Type</th>
+          <th class="text-center">Description</th>
+          <th class="text-center"><i class="material-icons">info_outline</i></th>
         </tr>
       </thead>
       <tr v-for="type in data" class="type-row clickable" @click="handleRowClick">
         <td class="type-id" v-bind:data-type-id="type.id">{{ type.id }}</td>
         <td class="type-name">{{ type.name }}</td>
         <td class="type-description">{{ type.description }}</td>
-        <td class="type-action"><button class="btn button" @click="handleBtnClick(type.id)">Get an Itinerary</button></td>
+        <td class="type-action td-actions"><button class="btn button btn-info" @click="handleBtnClick(type.id)">Get an Itinerary</button></td>
       </tr>
     </table>
   </div>
@@ -66,14 +67,21 @@ async function handleFetchSuggestion(itineraryTypeId: string) {
 </template>
 
 <style scoped>
+  .it-table th {
+    font-weight: 700;
+    font-size: 18px;
+  }
   .it-card {
-    border: 2px solid red;
+    /* border: 2px solid red; */
   }
   .it-card .it-header {
     text-align: center;
   }
+  .it-card .it-sub-header {
+    text-align: center;
+  }
   .type-description {
-    border: 2px solid red;
+    /* border: 2px solid red; */
     text-align: center;
   }
   .clickable:hover {
