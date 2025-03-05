@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import WelcomeMessage from './components/WelcomeMessage.vue'
+import { welcomeMsg, subtitle } from './constants'
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <img alt="Avanti Insieme logo" class="logo" src="@/assets/av-sign.png" width="600" height="350" />
 
     <div class="wrapper">
-      <HelloWorld msg="Welcome to Vue 3!" />
+      <WelcomeMessage :msg=welcomeMsg :subtitle="subtitle"/>
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
@@ -29,6 +30,7 @@ header {
 .logo {
   display: block;
   margin: 0 auto 2rem;
+  background: lightgray;
 }
 
 nav {

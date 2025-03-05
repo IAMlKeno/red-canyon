@@ -1,35 +1,38 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import ItinerarySuggestion from "./ItinerarySuggestion.vue";
 
-const props = defineProps<{
-  test: string,
-  types: any,
-}>()
+const api = import.meta.env.VITE_API;
 
 let data = ref([]);
+let suggestion = ref(null)
+let suggestionLoading = ref(false)
 
 async function fetchItineraryTypes() {
   try {
-    data = await (await fetch("http://localhost:4200/places/types")).json()
-    const rows = document.querySelectorAll("tr[class=type-row]")
-      rows.forEach(row => {
-      row.addEventListener("click", (e) => console.log('clicked'));
-    });
+    data = await (await fetch(`${api}/places/types`)).json()
   } catch (e) {
     console.log(`ERROR FETCHING TYPES: ${e}`)
   }
 }
 await fetchItineraryTypes()
 
-function uclick(evt) {
+async function uclick(evt) {
   const rowId = evt.target.parentElement.querySelector('td[class=type-id]').dataset.typeId
   console.log(`row id: ${rowId}`)
+  console.log(suggestionLoading.value)
+
+  suggestionLoading.value = true
+  suggestion.value = await (await fetch(`${api}/places/suggestion/${rowId}`)).json()
+
+  suggestionLoading.value = false
+  console.log(suggestion)
 }
 </script>
 
 <template>
   <div class="it-card">
-    <h2>Itinerary Type Card {{ test }}</h2>
+    <h2 class="it-header">Itinerary Type Card</h2>
     <hr />
     <table>
       <thead>
@@ -46,11 +49,19 @@ function uclick(evt) {
       </tr>
     </table>
   </div>
+  <hr />
+  <h1 v-show="suggestionLoading">Vue is generating a suggestion!</h1>
+  <div v-if="suggestion != null">
+    <ItinerarySuggestion :suggestion="suggestion" />
+  </div>
 </template>
 
 <style scoped>
   .it-card {
     border: 2px solid red;
+  }
+  .it-card .it-header {
+    text-align: center;
   }
   .type-description {
     border: 2px solid red;
