@@ -1,6 +1,6 @@
 import { ItineraryType, ItineraryInterface, Place } from "./ItineraryInterface";
 
-export interface ItineraryThingInterface {
+export interface ItineraryServiceInterface {
 
   /**
    * Fetch an itinerary suggestion.

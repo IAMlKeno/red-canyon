@@ -1,9 +1,9 @@
 import express from "express";
 import { ItineraryService } from "../controllers/ItineraryService";
-import { ItineraryThingInterface } from "../interfaces/ItineraryThingInterface";
+import { ItineraryServiceInterface } from "../interfaces/ItineraryServiceInterface";
 
 const router = express.Router();
-const service: ItineraryThingInterface = new ItineraryService();
+const service: ItineraryServiceInterface = new ItineraryService();
 
 // Get types
 router.get('/types', async (req, res) => {

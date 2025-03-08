@@ -1,10 +1,10 @@
 import { ItineraryType, ItineraryInterface, Place } from '../interfaces/ItineraryInterface'; // Assuming the interfaces are in a file called interfaces.ts
-import { ItineraryThingInterface } from '../interfaces/ItineraryThingInterface';
+import { ItineraryServiceInterface } from '../interfaces/ItineraryServiceInterface';
 import itineryTypes from "../static/data/itinerary";
 import suggestions from "../static/data/suggestions";
 import generateANumber from '../utils/utilMath';
 
-export class ItineraryService implements ItineraryThingInterface {
+export class ItineraryService implements ItineraryServiceInterface {
 
   private itineraries: ItineraryInterface[];
   private itineraryTypes: ItineraryType[];
