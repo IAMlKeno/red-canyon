@@ -1,4 +1,4 @@
-import { ItineraryType, ItineraryInterface, Place } from '../interfaces/ItineraryInterface'; // Assuming the interfaces are in a file called interfaces.ts
+import { ItineraryType, ItineraryInterface, Place } from '../interfaces/ItineraryInterface';
 import { ItineraryServiceInterface } from '../interfaces/ItineraryServiceInterface';
 import itineryTypes from "../static/data/itinerary";
 import suggestions from "../static/data/suggestions";
@@ -9,6 +9,12 @@ export class ItineraryService implements ItineraryServiceInterface {
   private itineraries: ItineraryInterface[];
   private itineraryTypes: ItineraryType[];
   private places: Place[];
+
+  /** location restriction */
+  public locationBias: any = { lat: 37.4161493, lng: -122.0812166 };
+  public defaultLangPref: string = 'en-US';
+  public defaultRegion: string = 'ca';
+  public defaultFields: Array<string> = ['displayName', 'location', 'businessStatus'];
 
   constructor() {
     this.itineraries = suggestions;
@@ -73,5 +79,31 @@ export class ItineraryService implements ItineraryServiceInterface {
       console.error(`Google Places API request failed with status: ${data.status}`);
       return undefined;
     }
+  }
+
+  async getPlaceFromGoogle(params: any) {
+    const { Place } = await google.maps.importLibrary("places") as google.maps.PlacesLibrary
+    const request = this.createSearchRequest(params.type);
+    const { places } = await Place.searchByText(request);
+    console.log(places);
+
+    return places;
+  }
+  createSearchRequest(
+    type: string,
+    text: string = '',
+    lang: string | null = null,
+    max: number = 8,
+    region: string | null = null): google.maps.places.SearchByTextRequest {
+    return {
+      textQuery: text,
+      fields: this.defaultFields,
+      includedType: type,
+      locationBias: this.locationBias,
+      language: lang ?? this.defaultLangPref,
+      maxResultCount: max,
+      region: region ?? this.defaultRegion,
+      useStrictTypeFiltering: false,
+    };
   }
 }

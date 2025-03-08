@@ -28,6 +28,7 @@
     "@types/cors": "^2.8.17",
     "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.0",
+    "@types/google.maps": "^3.58.1",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.13.8",
     "@types/nodemon": "^1.19.6",

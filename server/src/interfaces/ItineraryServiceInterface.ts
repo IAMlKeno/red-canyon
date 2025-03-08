@@ -10,8 +10,13 @@ export interface ItineraryServiceInterface {
 
   /**
    * Get all itinerary types.
-   */
+  */
   getItineraryTypes(): ItineraryType[];
+  
+  /**
+  * Get all itinerary types.
+  */
   getItineraryTypeById(id: string): ItineraryType|undefined;
+
   viewPlace(id: string): Place|undefined;
 }
