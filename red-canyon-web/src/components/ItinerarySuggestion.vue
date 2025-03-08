@@ -7,6 +7,6 @@ const props = defineProps<{
 </script>
 
 <template>
-  <h2>{{ itSuggestionHeading }}</h2>
+  <h2 class="text-center">{{ itSuggestionHeading }}</h2>
   <div>{{ suggestion }}</div>
 </template>
