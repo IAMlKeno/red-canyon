@@ -16,7 +16,7 @@ services:
     networks:
       - redcanyon-net
   server:
-    container_name: places-api
+    container_name: red-canyon-api
     ports:
       - 4200:4200
     expose:
@@ -32,5 +32,20 @@ services:
         COPY . .
         RUN npm install
     command: npm run dev -- --host=0.0.0.0
+    networks:
+      - redcanyon-net
+  # https://zomro.com/blog/faq/301-kak-ustanovit-redis-v-docker#:~:text=Docker%20Compose%20will%20automatically%20download,yaml%20file.&text=You%20can%20connect%20to%20the,defined%20in%20the%20docker%2Dcompose.
+  cache:
+    container_name: red-canyon-cache
+    image: redis:latest
+    environment:
+      - REDIS_PASSWORD=password
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+    restart: unless-stopped
+    expose:
+      - 6379
+    volumes:
+      - ./cache:/root/redis
     networks:
       - redcanyon-net
