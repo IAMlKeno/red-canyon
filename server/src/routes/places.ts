@@ -38,4 +38,24 @@ router.get('/suggestion/:placeType', async (req, res) => {
   }
 });
 
+router.post('/v1/suggestion', async (req, res) => {
+  let { lengthOfTrip, type } = req.body;
+
+  console.log(type);
+  if (type == undefined || lengthOfTrip == undefined) {
+    res.status(400).send("Itinerary parameters are required");
+    return;
+  }
+  
+  try {
+    let typeName = service.getItineraryTypeById(type);
+    // res.send({ type: typeName, length: lengthOfTrip });
+    let suggestion = service.getAnItineraryByType(typeName)
+
+    res.send(suggestion); // implicit 200
+  } catch (e) {
+    res.status(500).send('BAD REQUEST');
+  }
+});
+
 export default router;
