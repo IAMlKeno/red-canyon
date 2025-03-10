@@ -6,7 +6,7 @@ export interface ItineraryServiceInterface {
    * Fetch an itinerary suggestion.
    * @param type The type of itinerary to create
    */
-  getAnItineraryByType(type: ItineraryType): ItineraryInterface;
+  getAnItineraryByType(type: ItineraryType): Promise<ItineraryInterface>;
 
   /**
    * Get all itinerary types.
