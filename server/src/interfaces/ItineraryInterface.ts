@@ -1,4 +1,3 @@
-import { ItineraryService } from "../controllers/ItineraryService";
 import { protos } from '@googlemaps/places';
 
 export interface ItineraryInterface {
@@ -24,6 +23,8 @@ export interface ItineraryType {
     hours: number;
     minutes?: number; // Optional for more granularity
   };
+  keys: string[];
+  additional_keys: string[];
 }
 export const itineraryTypeMapper = (json: Record<string, any>) => {
   return {
@@ -50,10 +51,12 @@ export interface Place {
 }
 
 export const placeMapper = (gPlace: protos.google.maps.places.v1.IPlace) => {
+  const description = (gPlace.editorialSummary != undefined || gPlace.editorialSummary != null) && Object.keys(gPlace.editorialSummary).length > 0 ? gPlace.editorialSummary.text.toString() : '';
+
   return {
     id: gPlace.id,
     name: gPlace.displayName.text,
-    description: 'gPlace.editorialSummary.description.text.toString()',
+    description: description,
     location: gPlace.formattedAddress.toString(),
     realLocation: {
       lat: gPlace.location.latitude,

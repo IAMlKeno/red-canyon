@@ -11,5 +11,7 @@ export function generateUuid(): string {
 }
 
 export function calculateNumberOfPlaces(days: number = 1) {
+    console.log(`API CALCULATION: ${days} x ${placesPerDay}`);
+
   return days * placesPerDay;
 }

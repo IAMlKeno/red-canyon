@@ -33,10 +33,10 @@ router.get('/suggestion/:placeType', async (req, res) => {
   try {
     // ======= TEST CODE =========== //
     console.log(`Type name chosen (service): ${type}`);
-    let n = generateANumber(4);
+    let n = generateANumber(3);
     console.log(`Number gen'd: ${n}`);
     // ======= TEST CODE =========== //
-    let suggestion = suggestions.find(item => item.id == n.toString());
+    let suggestion = suggestions.at(n);//find(item => item.id == n.toString());
 
     res.send(suggestion).status(200);
   } catch (e) {
@@ -54,6 +54,7 @@ router.post('/v1/suggestion', async (req, res) => {
   }
 
   try {
+    console.log(`ENTRY LENGHT: ${lengthOfTrip}`);
     let typeName = service.getItineraryTypeById(type);
     service.getAnItineraryByType(typeName, { length: lengthOfTrip })
         .then((suggestion) => {
