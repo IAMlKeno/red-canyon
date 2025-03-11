@@ -46,13 +46,13 @@ router.post('/v1/suggestion', async (req, res) => {
     res.status(400).send("Itinerary parameters are required");
     return;
   }
-  
+
   try {
     let typeName = service.getItineraryTypeById(type);
-    // res.send({ type: typeName, length: lengthOfTrip });
-    let suggestion = service.getAnItineraryByType(typeName)
-
-    res.send(suggestion); // implicit 200
+    service.getAnItineraryByType(typeName)
+        .then((suggestion) => {
+          res.send(suggestion);
+        });
   } catch (e) {
     res.status(500).send('BAD REQUEST');
   }

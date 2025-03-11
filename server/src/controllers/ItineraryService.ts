@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { GoogleAuth } from 'google-auth-library';
 
 import { ItineraryType, ItineraryInterface, Place as RedPlace, placeMapper } from '../interfaces/ItineraryInterface';
@@ -43,7 +44,7 @@ export class ItineraryService implements ItineraryServiceInterface {
   constructor() {
     this.itineraries = suggestions;
     this.itineraryTypes = itineryTypes;
-    this.apiKey = process.env.GOOGLE_API_KEY;
+    this.apiKey = process.env['GOOGLE_API_KEY'];
     console.log(this.apiKey);
   }
 
@@ -120,7 +121,8 @@ export class ItineraryService implements ItineraryServiceInterface {
     const fetchedPlaces = await placeClient.searchText(request, {
       otherArgs: {
         headers: {
-          "X-Goog-FieldMask": this.defaultFields.join(','), // "*"
+          // "X-Goog-FieldMask": this.defaultFields.join(','), // "*"
+          "X-Goog-FieldMask": "*",
         },
       }
     });
@@ -147,14 +149,16 @@ export class ItineraryService implements ItineraryServiceInterface {
     lang: string | null = null,
     max: number = undefined,
     region: string | null = null): protos.google.maps.places.v1.ISearchTextRequest {
-    return {
+    const req: protos.google.maps.places.v1.ISearchTextRequest = {
       textQuery: 'restaurant', //text,
       includedType: 'restaurant',// type,
       locationBias: this.locationBias,
       languageCode: lang ?? this.defaultLangPref,
-      maxResultCount: max ?? this.placesPerDay,
+      maxResultCount: this.placesPerDay,
       regionCode: region ?? this.defaultRegion,
       strictTypeFiltering: false,
     };
+
+    return req;
   }
 }
