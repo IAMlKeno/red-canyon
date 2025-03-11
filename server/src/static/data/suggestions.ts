@@ -1,218 +1,1322 @@
-import { ItineraryInterface, Place } from "../../interfaces/ItineraryInterface";
+import { ItineraryInterface } from "../../interfaces/ItineraryInterface";
+import { generateUuid } from "../../utils/utilMath";
 import itineryTypes from "./itinerary";
 
 const suggestions: ItineraryInterface[] = [
   {
-    id: "1",
+    id: generateUuid(),
     type: itineryTypes[0], //adventure
     places: [
       {
-        id: "1",
-        name: 'Sims',
-        location: 'Some address',
+        id: "ChIJC_3cdla3j4ARMgf4Pw8Irek",
+        name: 'Cucina Venti Restaurant',
         description: "Explore to your heart's content",
+        location: '1390 Pear Ave Ste D, Mountain View, CA 94043, USA',
         realLocation: {
-          lat: 123123,
-          lng: 12312
+          lat: 37.4159532,
+          lng: 37.4159532
         },
         operatingHours: {
           hours: 1,
           minutes: 46,
           seconds: 0,
+          periods: [
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 10
+                    },
+                    day: 1,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 10
+                    },
+                    day: 1,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 11
+                    },
+                    day: 2,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 11
+                    },
+                    day: 2,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 12
+                    },
+                    day: 3,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 12
+                    },
+                    day: 3,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 13
+                    },
+                    day: 4,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 13
+                    },
+                    day: 4,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 14
+                    },
+                    day: 5,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 14
+                    },
+                    day: 5,
+                    _day: "day",
+                    hour: 22,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    "truncated": false,
+                    "date": {
+                        "year": 2025,
+                        "month": 3,
+                        "day": 15
+                    },
+                    "day": 6,
+                    "_day": "day",
+                    "hour": 16,
+                    "_hour": "hour",
+                    "minute": 0,
+                    "_minute": "minute"
+                },
+                close: {
+                    "truncated": false,
+                    "date": {
+                        "year": 2025,
+                        "month": 3,
+                        "day": 15
+                    },
+                    day: 6,
+                    _day: "day",
+                    hour: 22,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            }
+          ],
+          weekdayDescriptions: [
+              "Monday: 11:00\u202fAM – 9:00\u202fPM",
+              "Tuesday: 11:00\u202fAM – 9:00\u202fPM",
+              "Wednesday: 11:00\u202fAM – 9:00\u202fPM",
+              "Thursday: 11:00\u202fAM – 9:00\u202fPM",
+              "Friday: 11:00\u202fAM – 10:00\u202fPM",
+              "Saturday: 4:00 – 10:00\u202fPM",
+              "Sunday: Closed"
+          ],
+          specialDays: [],
+          secondaryHoursType: "SECONDARY_HOURS_TYPE_UNSPECIFIED",
+          nextOpenTime: null,
+          nextCloseTime: {
+              seconds: "1741665600",
+              nanos: 0
+          },
+          openNow: true,
+          _openNow: "openNow"
         },
         rating: 4.5
       },
       {
-        id: "2",
-        name: 'Sims',
-        location: 'Some address',
+        id: "ChIJTzWDpDO3j4ARI08nSK_WLeU",
+        name: 'Scratch',
+        location: '401 Castro St #100, Mountain View, CA 94041, USA',
         description: "Explore to your heart's content",
         realLocation: {
-          lat: 123123,
-          lng: 12312
+          lat: 37.391093,
+          lng: 37.391093
         },
         operatingHours: {
           hours: 1,
           minutes: 46,
           seconds: 0,
+          periods: [
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 10
+                    },
+                    day: 1,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 10
+                    },
+                    day: 1,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 11
+                    },
+                    day: 2,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 11
+                    },
+                    day: 2,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 12
+                    },
+                    day: 3,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 12
+                    },
+                    day: 3,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 13
+                    },
+                    day: 4,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 13
+                    },
+                    day: 4,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 14
+                    },
+                    day: 5,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 14
+                    },
+                    day: 5,
+                    _day: "day",
+                    hour: 22,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    "truncated": false,
+                    "date": {
+                        "year": 2025,
+                        "month": 3,
+                        "day": 15
+                    },
+                    "day": 6,
+                    "_day": "day",
+                    "hour": 16,
+                    "_hour": "hour",
+                    "minute": 0,
+                    "_minute": "minute"
+                },
+                close: {
+                    "truncated": false,
+                    "date": {
+                        "year": 2025,
+                        "month": 3,
+                        "day": 15
+                    },
+                    day: 6,
+                    _day: "day",
+                    hour: 22,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            }
+          ],
+          weekdayDescriptions: [
+              "Monday: 11:00\u202fAM – 9:00\u202fPM",
+              "Tuesday: 11:00\u202fAM – 9:00\u202fPM",
+              "Wednesday: 11:00\u202fAM – 9:00\u202fPM",
+              "Thursday: 11:00\u202fAM – 9:00\u202fPM",
+              "Friday: 11:00\u202fAM – 10:00\u202fPM",
+              "Saturday: 4:00 – 10:00\u202fPM",
+              "Sunday: Closed"
+          ],
+          specialDays: [],
+          secondaryHoursType: "SECONDARY_HOURS_TYPE_UNSPECIFIED",
+          nextOpenTime: null,
+          nextCloseTime: {
+              seconds: "1741665600",
+              nanos: 0
+          },
+          openNow: true,
+          _openNow: "openNow"
         },
         rating: 4.5
-      },
-      {
-        id: "3",
-        name: 'Sims',
-        location: 'Some address',
-        description: "Explore to your heart's content",
-        realLocation: {
-          lat: 123123,
-          lng: 12312
-        },
-        operatingHours: {
-          hours: 1,
-          minutes: 46,
-          seconds: 0,
-        },
-        rating: 4.5
-      },
-      {
-        id: "4",
-        name: 'Sims',
-        location: 'Some address',
-        description: "Explore to your heart's content",
-        realLocation: {
-          lat: 123123,
-          lng: 12312
-        },
-        operatingHours: {
-          hours: 1,
-          minutes: 46,
-          seconds: 0,
-        },
-        rating: 4.5
-      },
+      }
     ]
   },
   {
-    id: "2",
+    id: generateUuid(),
     type: itineryTypes[1], //action
     places: [
       {
-        id: "1",
+        id: "ChIJTzWDpDO3j4ARI08nSK_WLeU",
         name: 'Sims',
         location: 'Some address',
         description: "Explore to your heart's content",
         realLocation: {
-          lat: 123123,
-          lng: 12312
+          lat: 37.391093,
+          lng: 37.391093
         },
         operatingHours: {
           hours: 1,
           minutes: 46,
           seconds: 0,
+          periods: [
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 10
+                    },
+                    day: 1,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 10
+                    },
+                    day: 1,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 11
+                    },
+                    day: 2,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 11
+                    },
+                    day: 2,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 12
+                    },
+                    day: 3,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 12
+                    },
+                    day: 3,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 13
+                    },
+                    day: 4,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 13
+                    },
+                    day: 4,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 14
+                    },
+                    day: 5,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 14
+                    },
+                    day: 5,
+                    _day: "day",
+                    hour: 22,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    "truncated": false,
+                    "date": {
+                        "year": 2025,
+                        "month": 3,
+                        "day": 15
+                    },
+                    "day": 6,
+                    "_day": "day",
+                    "hour": 16,
+                    "_hour": "hour",
+                    "minute": 0,
+                    "_minute": "minute"
+                },
+                close: {
+                    "truncated": false,
+                    "date": {
+                        "year": 2025,
+                        "month": 3,
+                        "day": 15
+                    },
+                    day: 6,
+                    _day: "day",
+                    hour: 22,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            }
+          ],
+          weekdayDescriptions: [
+              "Monday: 11:00\u202fAM – 9:00\u202fPM",
+              "Tuesday: 11:00\u202fAM – 9:00\u202fPM",
+              "Wednesday: 11:00\u202fAM – 9:00\u202fPM",
+              "Thursday: 11:00\u202fAM – 9:00\u202fPM",
+              "Friday: 11:00\u202fAM – 10:00\u202fPM",
+              "Saturday: 4:00 – 10:00\u202fPM",
+              "Sunday: Closed"
+          ],
+          specialDays: [],
+          secondaryHoursType: "SECONDARY_HOURS_TYPE_UNSPECIFIED",
+          nextOpenTime: null,
+          nextCloseTime: {
+              seconds: "1741665600",
+              nanos: 0
+          },
+          openNow: true,
+          _openNow: "openNow"
         },
         rating: 4.5
       },
       {
-        id: "2",
+        id: "ChIJTzWDpDO3j4ARI08nSK_WLeU",
         name: 'Sims',
         location: 'Some address',
         description: "Explore to your heart's content",
         realLocation: {
-          lat: 123123,
-          lng: 12312
+          lat: 37.391093,
+          lng: 37.391093
         },
         operatingHours: {
           hours: 1,
           minutes: 46,
           seconds: 0,
+          periods: [
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 10
+                    },
+                    day: 1,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 10
+                    },
+                    day: 1,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 11
+                    },
+                    day: 2,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 11
+                    },
+                    day: 2,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 12
+                    },
+                    day: 3,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 12
+                    },
+                    day: 3,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 13
+                    },
+                    day: 4,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 13
+                    },
+                    day: 4,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 14
+                    },
+                    day: 5,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 14
+                    },
+                    day: 5,
+                    _day: "day",
+                    hour: 22,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    "truncated": false,
+                    "date": {
+                        "year": 2025,
+                        "month": 3,
+                        "day": 15
+                    },
+                    "day": 6,
+                    "_day": "day",
+                    "hour": 16,
+                    "_hour": "hour",
+                    "minute": 0,
+                    "_minute": "minute"
+                },
+                close: {
+                    "truncated": false,
+                    "date": {
+                        "year": 2025,
+                        "month": 3,
+                        "day": 15
+                    },
+                    day: 6,
+                    _day: "day",
+                    hour: 22,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            }
+          ],
+          weekdayDescriptions: [
+              "Monday: 11:00\u202fAM – 9:00\u202fPM",
+              "Tuesday: 11:00\u202fAM – 9:00\u202fPM",
+              "Wednesday: 11:00\u202fAM – 9:00\u202fPM",
+              "Thursday: 11:00\u202fAM – 9:00\u202fPM",
+              "Friday: 11:00\u202fAM – 10:00\u202fPM",
+              "Saturday: 4:00 – 10:00\u202fPM",
+              "Sunday: Closed"
+          ],
+          specialDays: [],
+          secondaryHoursType: "SECONDARY_HOURS_TYPE_UNSPECIFIED",
+          nextOpenTime: null,
+          nextCloseTime: {
+              seconds: "1741665600",
+              nanos: 0
+          },
+          openNow: true,
+          _openNow: "openNow"
         },
         rating: 4.5
-      },
-      {
-        id: "3",
-        name: 'Sims',
-        location: 'Some address',
-        description: "Explore to your heart's content",
-        realLocation: {
-          lat: 123123,
-          lng: 12312
-        },
-        operatingHours: {
-          hours: 1,
-          minutes: 46,
-          seconds: 0,
-        },
-        rating: 4.5
-      },
-      {
-        id: "4",
-        name: 'Sims',
-        location: 'Some address',
-        description: "Explore to your heart's content",
-        realLocation: {
-          lat: 123123,
-          lng: 12312
-        },
-        operatingHours: {
-          hours: 1,
-          minutes: 46,
-          seconds: 0,
-        },
-        rating: 4.5
-      },
+      }
     ]
   },
   {
-    id: "3",
+    id: generateUuid(),
     type: itineryTypes[2], //Foodie
     places: [
       {
-        id: "1",
+        id: "ChIJTzWDpDO3j4ARI08nSK_WLeU",
         name: 'Sims',
         location: 'Some address',
         description: "Explore to your heart's content",
         realLocation: {
-          lat: 123123,
-          lng: 12312
+          lat: 37.391093,
+          lng: 37.391093
         },
         operatingHours: {
           hours: 1,
           minutes: 46,
           seconds: 0,
+          periods: [
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 10
+                    },
+                    day: 1,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 10
+                    },
+                    day: 1,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 11
+                    },
+                    day: 2,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 11
+                    },
+                    day: 2,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 12
+                    },
+                    day: 3,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 12
+                    },
+                    day: 3,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 13
+                    },
+                    day: 4,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 13
+                    },
+                    day: 4,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 14
+                    },
+                    day: 5,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 14
+                    },
+                    day: 5,
+                    _day: "day",
+                    hour: 22,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    "truncated": false,
+                    "date": {
+                        "year": 2025,
+                        "month": 3,
+                        "day": 15
+                    },
+                    "day": 6,
+                    "_day": "day",
+                    "hour": 16,
+                    "_hour": "hour",
+                    "minute": 0,
+                    "_minute": "minute"
+                },
+                close: {
+                    "truncated": false,
+                    "date": {
+                        "year": 2025,
+                        "month": 3,
+                        "day": 15
+                    },
+                    day: 6,
+                    _day: "day",
+                    hour: 22,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            }
+          ],
+          weekdayDescriptions: [
+              "Monday: 11:00\u202fAM – 9:00\u202fPM",
+              "Tuesday: 11:00\u202fAM – 9:00\u202fPM",
+              "Wednesday: 11:00\u202fAM – 9:00\u202fPM",
+              "Thursday: 11:00\u202fAM – 9:00\u202fPM",
+              "Friday: 11:00\u202fAM – 10:00\u202fPM",
+              "Saturday: 4:00 – 10:00\u202fPM",
+              "Sunday: Closed"
+          ],
+          specialDays: [],
+          secondaryHoursType: "SECONDARY_HOURS_TYPE_UNSPECIFIED",
+          nextOpenTime: null,
+          nextCloseTime: {
+              seconds: "1741665600",
+              nanos: 0
+          },
+          openNow: true,
+          _openNow: "openNow"
         },
         rating: 4.5
       },
       {
-        id: "2",
+        id: "ChIJTzWDpDO3j4ARI08nSK_WLeU",
         name: 'Sims',
         location: 'Some address',
         description: "Explore to your heart's content",
         realLocation: {
-          lat: 123123,
-          lng: 12312
+          lat: 37.391093,
+          lng: 37.391093
         },
         operatingHours: {
           hours: 1,
           minutes: 46,
           seconds: 0,
+          periods: [
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 10
+                    },
+                    day: 1,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 10
+                    },
+                    day: 1,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 11
+                    },
+                    day: 2,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 11
+                    },
+                    day: 2,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 12
+                    },
+                    day: 3,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 12
+                    },
+                    day: 3,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 13
+                    },
+                    day: 4,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 13
+                    },
+                    day: 4,
+                    _day: "day",
+                    hour: 21,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 14
+                    },
+                    day: 5,
+                    _day: "day",
+                    hour: 11,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                },
+                close: {
+                    truncated: false,
+                    date: {
+                        year: 2025,
+                        month: 3,
+                        day: 14
+                    },
+                    day: 5,
+                    _day: "day",
+                    hour: 22,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            },
+            {
+                open: {
+                    "truncated": false,
+                    "date": {
+                        "year": 2025,
+                        "month": 3,
+                        "day": 15
+                    },
+                    "day": 6,
+                    "_day": "day",
+                    "hour": 16,
+                    "_hour": "hour",
+                    "minute": 0,
+                    "_minute": "minute"
+                },
+                close: {
+                    "truncated": false,
+                    "date": {
+                        "year": 2025,
+                        "month": 3,
+                        "day": 15
+                    },
+                    day: 6,
+                    _day: "day",
+                    hour: 22,
+                    _hour: "hour",
+                    minute: 0,
+                    _minute: "minute"
+                }
+            }
+          ],
+          weekdayDescriptions: [
+              "Monday: 11:00\u202fAM – 9:00\u202fPM",
+              "Tuesday: 11:00\u202fAM – 9:00\u202fPM",
+              "Wednesday: 11:00\u202fAM – 9:00\u202fPM",
+              "Thursday: 11:00\u202fAM – 9:00\u202fPM",
+              "Friday: 11:00\u202fAM – 10:00\u202fPM",
+              "Saturday: 4:00 – 10:00\u202fPM",
+              "Sunday: Closed"
+          ],
+          specialDays: [],
+          secondaryHoursType: "SECONDARY_HOURS_TYPE_UNSPECIFIED",
+          nextOpenTime: null,
+          nextCloseTime: {
+              seconds: "1741665600",
+              nanos: 0
+          },
+          openNow: true,
+          _openNow: "openNow"
         },
         rating: 4.5
-      },
-      {
-        id: "3",
-        name: 'Sims',
-        location: 'Some address',
-        description: "Explore to your heart's content",
-        realLocation: {
-          lat: 123123,
-          lng: 12312
-        },
-        operatingHours: {
-          hours: 1,
-          minutes: 46,
-          seconds: 0,
-        },
-        rating: 4.5
-      },
-      {
-        id: "4",
-        name: 'Sims',
-        location: 'Some address',
-        description: "Explore to your heart's content",
-        realLocation: {
-          lat: 123123,
-          lng: 12312
-        },
-        operatingHours: {
-          hours: 1,
-          minutes: 46,
-          seconds: 0,
-        },
-        rating: 4.5
-      },
+      }
     ]
   }
 ];
-
 
 export default suggestions;
