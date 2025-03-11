@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { placesPerDay } from "../constants";
 
 export function generateANumber(max = 3) {
   let number = Math.floor(Math.random() * max);
@@ -7,4 +8,8 @@ export function generateANumber(max = 3) {
 
 export function generateUuid(): string {
   return uuidv4();
+}
+
+export function calculateNumberOfPlaces(days: number = 1) {
+  return days * placesPerDay;
 }

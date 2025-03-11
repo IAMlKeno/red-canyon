@@ -53,11 +53,11 @@ export const placeMapper = (gPlace: protos.google.maps.places.v1.IPlace) => {
   return {
     id: gPlace.id,
     name: gPlace.displayName.text,
-    description: gPlace.generativeSummary.description.text,
-    location: gPlace.formattedAddress,
+    description: 'gPlace.editorialSummary.description.text.toString()',
+    location: gPlace.formattedAddress.toString(),
     realLocation: {
       lat: gPlace.location.latitude,
-      lng: gPlace.location.latitude
+      lng: gPlace.location.longitude
     },
     rating: gPlace.rating,
     operatingHours: gPlace.currentOpeningHours,
