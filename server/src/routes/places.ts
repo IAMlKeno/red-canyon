@@ -1,6 +1,8 @@
 import express from "express";
 import { ItineraryService } from "../controllers/ItineraryService";
 import { ItineraryServiceInterface } from "../interfaces/ItineraryServiceInterface";
+import { generateANumber } from "../utils/utilMath";
+import suggestions from "../static/data/suggestions";
 
 const router = express.Router();
 const service: ItineraryServiceInterface = new ItineraryService();
@@ -29,12 +31,35 @@ router.get('/suggestion/:placeType', async (req, res) => {
   }
 
   try {
-    let typeName = service.getItineraryTypeById(type);
-    let suggestion = service.getAnItineraryByType(typeName)
+    // ======= TEST CODE =========== //
+    console.log(`Type name chosen (service): ${type}`);
+    let n = generateANumber(3);
+    console.log(`Number gen'd: ${n}`);
+    // ======= TEST CODE =========== //
+    let suggestion = suggestions.at(n);//find(item => item.id == n.toString());
 
     res.send(suggestion).status(200);
   } catch (e) {
     res.send('BAD REQUEST').status(500);
+  }
+});
+
+router.post('/v1/suggestion', async (req, res) => {
+  let { lengthOfTrip, type } = req.body;
+
+  if (type == undefined || lengthOfTrip == undefined) {
+    res.status(400).send("Itinerary parameters are required");
+    return;
+  }
+
+  try {
+    let typeName = service.getItineraryTypeById(type);
+    service.getAnItineraryByType(typeName, { length: lengthOfTrip })
+        .then((suggestion) => {
+          res.send(suggestion);
+        });
+  } catch (e) {
+    res.status(500).send('BAD REQUEST');
   }
 });
 

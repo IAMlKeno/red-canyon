@@ -1,45 +1,52 @@
-import { ItineraryType, ItineraryInterface, Place } from '../interfaces/ItineraryInterface';
+import 'dotenv/config';
+import { GoogleAuth } from 'google-auth-library';
+import { PlacesClient, protos } from '@googlemaps/places';
+
+import { ItineraryType, ItineraryInterface, Place as RedPlace, placeMapper } from '../interfaces/ItineraryInterface';
 import { ItineraryServiceInterface } from '../interfaces/ItineraryServiceInterface';
 import itineryTypes from "../static/data/itinerary";
 import suggestions from "../static/data/suggestions";
-import generateANumber from '../utils/utilMath';
+import { calculateNumberOfPlaces, generateUuid } from '../utils/utilMath';
+import { provinceCoordinatesMap } from '../constants';
+import { createNearbySearchRequest } from '../utils/placeUtils';
 
 export class ItineraryService implements ItineraryServiceInterface {
 
-  private itineraries: ItineraryInterface[];
+  private cachedItineraries: ItineraryInterface[];
   private itineraryTypes: ItineraryType[];
-  private places: Place[];
+  private apiKey: string;
+  private placeClient: PlacesClient;
+  private locationRestriction: protos.google.maps.places.v1.SearchNearbyRequest.ILocationRestriction;
 
-  /** location restriction */
-  public locationBias: any = { lat: 37.4161493, lng: -122.0812166 };
-  public defaultLangPref: string = 'en-US';
-  public defaultRegion: string = 'ca';
-  public defaultFields: Array<string> = ['displayName', 'location', 'businessStatus'];
+  public defaultFieldsUpdated: Array<string> = [
+    'places.id',
+    'places.displayName',
+    'places.editorialSummary',
+    'places.formattedAddress',
+    'places.location',
+    'places.rating',
+    'places.currentOpeningHours',
+    'places.businessStatus',
+  ]
 
   constructor() {
-    this.itineraries = suggestions;
+    this.cachedItineraries = suggestions; // Load from redis.
     this.itineraryTypes = itineryTypes;
-    // this.places = places;
-  }
+    this.apiKey = process.env['GOOGLE_API_KEY'];
 
-  // constructor(itineraries: ItineraryInterface[], itineraryTypes: ItineraryType[], places: Place[]) {
-  //   this.itineraries = itineraries;
-  //   this.itineraryTypes = itineraryTypes;
-  //   this.places = places;
-  // }
+    const auth = new GoogleAuth({apiKey: this.apiKey}); // jsonclient
+    this.placeClient = new PlacesClient({ auth });
 
-  getAnItineraryByType(type: ItineraryType): ItineraryInterface {
-    // ======= TEST CODE =========== //
-    console.log(`Type name chosen (service): ${type.name}`);
-    let n = generateANumber(4);
-    console.log(`Number gen'd: ${n}`);
-    // ======= TEST CODE =========== //
-    let itinerary = this.itineraries.find(item => item.id == n.toString());
-    // const itinerary = this.itineraries.find(itinerary => itinerary.type.id === type.id);
-    if (!itinerary) {
-      throw new Error(`No itinerary found for type ${type.name}`);
-    }
-    return itinerary;
+    const province = process.env['INTINERARY_LOCATION'];
+    this.locationRestriction = {
+      circle: {
+        center: protos.google.type.LatLng.create({
+          latitude: provinceCoordinatesMap.get(province).lat,
+          longitude: provinceCoordinatesMap.get(province).lng,
+        }),
+        radius: provinceCoordinatesMap.get(province).radius,
+      }
+    };
   }
 
   getItineraryTypes(): ItineraryType[] {
@@ -50,60 +57,84 @@ export class ItineraryService implements ItineraryServiceInterface {
     return this.itineraryTypes.find(type => type.id == id);
   }
 
-  viewPlace(id: string): Place | undefined {
-    return undefined; //this.places.find(place => place.id === id);
+  async viewPlace(id: string): Promise<RedPlace | undefined> {
+    return await this.getPlaceDetailsFromGoogle(id);
   }
 
-  // Example of a method integrating with Google Places API
-  async getPlaceDetailsFromGoogle(placeId: string, apiKey: string = ''): Promise<Place | undefined> {
-    const response = await fetch(`https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${apiKey}`);
-    const data = await response.json();
+  async getAnItineraryByType(type: ItineraryType, ...additonalParams: any[]): Promise<ItineraryInterface> {
+    // Destructure parameters.
+    let { length } = additonalParams[0];
 
-    if (data.status === 'OK') {
-      const result = data.result;
+    let generatedPlaces = await this.getPlacesFromGoogle({
+      type: type,
+      max: calculateNumberOfPlaces(length),
+    });
+    const generatedItinerary: ItineraryInterface = {
+      id: generateUuid(),
+      type: type,
+      places: generatedPlaces
+    }
+
+    if (!generatedItinerary) {
+      throw new Error(`No itinerary found for type ${type.name}`);
+    }
+    return generatedItinerary;
+  }
+
+  async getPlaceDetailsFromGoogle(placeId: string): Promise<RedPlace | undefined> {
+    const req: protos.google.maps.places.v1.IGetPlaceRequest = { name: `places/${placeId}`};
+    let placeData = await this.placeClient.getPlace(req, this.getApiHeader());
+
+    if (Object.keys(placeData[0]).length > 0) {
       // Map the Google Places API response to your Place interface
-      const place: Place = {
-        id: result.place_id,
-        name: result.name,
-        location: result.geometry.location, 
-        realLocation: {
-          lat: result.geometry.location.lat,
-          lng: result.geometry.location.lng,
-        },
-        rating: result.rating,
-        operatingHours: result.opening_hours,
-        description: 'result.'
-      };
+      const place = placeMapper(placeData[0]);
+
       return place;
     } else {
-      console.error(`Google Places API request failed with status: ${data.status}`);
+      console.error(`Google Places API request failed `);
       return undefined;
     }
   }
 
-  async getPlaceFromGoogle(params: any) {
-    const { Place } = await google.maps.importLibrary("places") as google.maps.PlacesLibrary
-    const request = this.createSearchRequest(params.type);
-    const { places } = await Place.searchByText(request);
-    console.log(places);
+  async getPlacesFromGoogle(params: any) {
+    let generatedPlaces: RedPlace[] = [];
+    let { type, max } = params;
 
-    return places;
+    try {
+      const request = createNearbySearchRequest(type.keys, this.locationRestriction, max);
+      const fetchedPlaces = await this.placeClient.searchNearby(request, this.getApiHeader());
+
+      if (Object.keys(fetchedPlaces[0]).length > 0) {
+        generatedPlaces = fetchedPlaces[0]
+            .places
+            .map((googlePlace) => placeMapper(googlePlace));
+      } else {
+        throw Error('Not a usable response from google');
+      }
+
+      console.log(generatedPlaces);
+    } catch(e) {
+      console.log(`AN ERROR OCCURRED FETCHING ${e.toString()}`);
+    } finally {
+      return generatedPlaces;
+    }
   }
-  createSearchRequest(
-    type: string,
-    text: string = '',
-    lang: string | null = null,
-    max: number = 8,
-    region: string | null = null): google.maps.places.SearchByTextRequest {
+
+  /**
+   * Fetch the FieldMask field - this will limit how many fields
+   * the google API returns.
+   *
+   * @returns [Object] headers object with the "X-Goog-FieldMask".
+   *
+   * @see gax.CallOptions.otherArgs
+   */
+  private getApiHeader(): any {
     return {
-      textQuery: text,
-      fields: this.defaultFields,
-      includedType: type,
-      locationBias: this.locationBias,
-      language: lang ?? this.defaultLangPref,
-      maxResultCount: max,
-      region: region ?? this.defaultRegion,
-      useStrictTypeFiltering: false,
+      otherArgs: {
+        headers: {
+          "X-Goog-FieldMask": this.defaultFieldsUpdated.join(','),
+        },
+      }
     };
   }
 }
