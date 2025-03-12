@@ -126,7 +126,7 @@ export class ItineraryService implements ItineraryServiceInterface {
    *
    * @returns [Object] headers object with the "X-Goog-FieldMask".
    *
-   * @see gax.CallOptions
+   * @see gax.CallOptions.otherArgs
    */
   private getApiHeader(): any {
     return {

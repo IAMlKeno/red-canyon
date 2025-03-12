@@ -47,14 +47,12 @@ router.get('/suggestion/:placeType', async (req, res) => {
 router.post('/v1/suggestion', async (req, res) => {
   let { lengthOfTrip, type } = req.body;
 
-  console.log(type);
   if (type == undefined || lengthOfTrip == undefined) {
     res.status(400).send("Itinerary parameters are required");
     return;
   }
 
   try {
-    console.log(`ENTRY LENGHT: ${lengthOfTrip}`);
     let typeName = service.getItineraryTypeById(type);
     service.getAnItineraryByType(typeName, { length: lengthOfTrip })
         .then((suggestion) => {

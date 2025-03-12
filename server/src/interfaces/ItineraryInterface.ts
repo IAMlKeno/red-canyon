@@ -26,6 +26,7 @@ export interface ItineraryType {
   keys: string[];
   additional_keys: string[];
 }
+
 export const itineraryTypeMapper = (json: Record<string, any>) => {
   return {
     id: json['id'],
@@ -51,7 +52,11 @@ export interface Place {
 }
 
 export const placeMapper = (gPlace: protos.google.maps.places.v1.IPlace) => {
-  const description = (gPlace.editorialSummary != undefined || gPlace.editorialSummary != null) && Object.keys(gPlace.editorialSummary).length > 0 ? gPlace.editorialSummary.text.toString() : '';
+  const description =
+      (gPlace.editorialSummary != undefined || gPlace.editorialSummary != null)
+      && Object.keys(gPlace.editorialSummary).length > 0
+        ? gPlace.editorialSummary.text.toString()
+        : '';
 
   return {
     id: gPlace.id,
