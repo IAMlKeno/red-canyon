@@ -6,9 +6,9 @@ import { welcomeMsg, subtitle } from './constants'
 
 <template>
   <header>
-    <img alt="Avanti Insieme logo" class="logo" src="@/assets/av-sign.png" width="600" height="350" />
 
     <div class="wrapper">
+      <img alt="Avanti Insieme logo" class="logo" src="@/assets/av-sign.png" width="600" height="350" />
       <WelcomeMessage :msg=welcomeMsg :subtitle="subtitle"/>
 
       <nav>
@@ -18,7 +18,8 @@ import { welcomeMsg, subtitle } from './constants'
     </div>
   </header>
 
-  <RouterView />
+  <div>
+  <RouterView /></div>
 </template>
 
 <style scoped>
@@ -72,6 +73,7 @@ nav a:first-of-type {
     display: flex;
     place-items: flex-start;
     flex-wrap: wrap;
+    flex-direction: column;
   }
 
   nav {

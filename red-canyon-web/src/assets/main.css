@@ -7,6 +7,10 @@
   font-weight: normal;
 }
 
+footer {
+  margin-bottom: 20px;
+  border: 2px solid red;
+}
 a,
 .green {
   text-decoration: none;
@@ -28,8 +32,9 @@ a,
   }
 
   #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     padding: 0 2rem;
+    text-align: center;
   }
 }

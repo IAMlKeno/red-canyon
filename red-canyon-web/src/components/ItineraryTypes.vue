@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import ItinerarySuggestion from "./ItinerarySuggestion.vue";
+import ItineraryType from '../components/itinerary/ItineraryType.vue'
+import Suggestion from '../components/itinerary/Suggestion.vue'
 
 const api = import.meta.env.VITE_API;
 
@@ -27,7 +29,8 @@ function handleRowClick(evt) {
 
 function handleBtnClick(id) {
   event.preventDefault();
-  handleFetchSuggestion(id);
+  alert(`clicked ${id}`);
+  // handleFetchSuggestion(id);
 }
 
 async function handleFetchSuggestion(itineraryTypeId: string) {
@@ -40,26 +43,24 @@ async function handleFetchSuggestion(itineraryTypeId: string) {
 <template>
   <div class="it-card">
     <h2 class="it-header text-center">Itinerary Planner</h2>
-    <h5 class="it-sub-header text-center">Pick an itinerary type to get started!</h5>
+    <h5 class="it-sub-header text-center">Click one to get a suggestion!</h5>
     <hr />
-    <table class="table it-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Type</th>
-          <th class="text-center">Description</th>
-          <th class="text-center"><i class="material-icons">info_outline</i></th>
-        </tr>
-      </thead>
-      <tr v-for="type in data" class="type-row clickable" @click="handleRowClick">
-        <td class="type-id" v-bind:data-type-id="type.id">{{ type.id }}</td>
-        <td class="type-name">{{ type.name }}</td>
-        <td class="type-description text-center">{{ type.description }}</td>
-        <td class="type-action td-actions"><button class="btn button btn-info" @click="handleBtnClick(type.id)">Get an Itinerary</button></td>
-      </tr>
-    </table>
+
+    <div class="grid itinerary-grid">
+      <ItineraryType v-for="type in data"
+          :title="type.name"
+          :description="type.description"
+          :duration="type.expectedDuration.hours"
+          @click="handleBtnClick(type.id)"
+          class="clickable"
+          />
+    </div>
+
+    <hr />
+
   </div>
   <hr />
+  <Suggestion />
   <h1 v-show="suggestionLoading">Vue is generating a suggestion!</h1>
   <div v-if="suggestion != null">
     <ItinerarySuggestion :suggestion="suggestion" />
@@ -73,5 +74,16 @@ async function handleFetchSuggestion(itineraryTypeId: string) {
   }
   .clickable:hover {
     cursor: pointer;
+    background-color: lightblue;
+    color: white;
+  }
+  .itinerary-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .itinerary-grid .grid-item {
+    margin-top: 10px;
+    width: 30%;
   }
 </style>
