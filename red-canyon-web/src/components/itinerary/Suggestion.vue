@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ItineraryInterface, Place as PlaceType } from '@/models/ItineraryInterface';
 import Place from './Place.vue';
-import { ref } from 'vue';
+import { itSuggestionHeading } from '../../constants';
 
 let lengthOfTrip = 3;
 let placesPerDay = 2;
@@ -16,8 +16,8 @@ let suggestion: ItineraryInterface = {
       id: 'place/UUID1',
       name: "place 1",
       realLocation: {
-        lat: 123,
-        lng: 234
+        lat: 46.4564868,
+        lng: -63.293935700000006
       },
       location: '123 Somewhere street',
       rating: 4.5
@@ -26,28 +26,28 @@ let suggestion: ItineraryInterface = {
       id: 'place/UUID2',
       name: "place 2",
       realLocation: {
-        lat: 123,
-        lng: 234
+        lat: 46.4564868,
+        lng: -63.293935700000006
       },
       location: '123 Somewhere street',
-      rating: 4.5
+      rating: 3
     },
     {
       id: 'place/UUID3',
       name: "place 3",
       realLocation: {
-        lat: 123,
-        lng: 234
+        lat: 46.4564868,
+        lng: -63.293935700000006
       },
       location: '123 Somewhere street',
-      rating: 4.5
+      rating: 5
     },
     {
       id: 'place/UUID4',
       name: "place 4",
       realLocation: {
-        lat: 123,
-        lng: 234
+        lat: 46.4564868,
+        lng: -63.293935700000006
       },
       location: '123 Somewhere street',
       rating: 4.5
@@ -56,21 +56,21 @@ let suggestion: ItineraryInterface = {
       id: 'place/UUID5',
       name: "place 5",
       realLocation: {
-        lat: 123,
-        lng: 234
+        lat: 46.4564868,
+        lng: -63.293935700000006
       },
       location: '123 Somewhere street',
-      rating: 4.5
+      rating: 5
     },
     {
       id: 'place/UUID6',
       name: "place 6",
       realLocation: {
-        lat: 123,
-        lng: 234
+        lat: 46.4564868,
+        lng: -63.293935700000006
       },
       location: '123 Somewhere street',
-      rating: 4.5
+      rating: 3.5
     },
   ]
 };
@@ -90,13 +90,29 @@ console.log(dividedPlaces);
 </script>
 
 <template>
+  <div class="itinerary-header">
+    <div class="text">
+      <h2 class="text-center">{{ itSuggestionHeading }}</h2>
+      <h5 class="text-center">Your 3 Day Foodie trip to Prince Edward Island</h5>
+    </div>
+    <div class="itinerary-actions">
+      <span class="nav-link-icon d-block"><i class="ni ni-atom"></i></span>
+      <div class="generate-new">
+        Here
+        <i class="fa fa-refresh" ></i>
+      </div>
+      <div class="download">
+        <i class="fa fa-download"></i>
+      </div>
+    </div>
+  </div>
   <div class="suggestion-tab-wrapper">
     <div class="nav-wrapper">
       <ul class="nav nav-pills nav-fill flex-column flex-md-row" id="tabs-icons-text" role="tablist">
         <li v-for="(day, index) in lengthOfTrip" class="nav-item">
               <a
                   v-if="index == 0"
-                  :id="`tabs-day-${day}-tab`"
+                  :id="`tabs-day-${ day }-tab`"
                   :href="`#tabs-day-${ day }`"
                   :aria-controls="`tabs-day-${ day }`"
                   class="nav-link mb-sm-3 mb-md-0 active"
@@ -139,3 +155,17 @@ console.log(dividedPlaces);
   <hr />
 
 </template>
+
+<style scoped>
+  .itinerary-header {
+    display: flex;
+    flex-direction: row;
+  }
+  .itinerary-header .text {
+    flex-basis: 95%;
+  }
+  .itinerary-header .itinerary-actions {
+    display: flex;
+    flex-direction: column;
+  }
+</style>
