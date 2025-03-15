@@ -1,10 +1,21 @@
 <script lang="ts" setup>
 import type { Place } from '@/models/ItineraryInterface';
+import { confirmAction } from '../../utils/webUtils';
 
 const props = defineProps<{
   place: Partial<Place>;
 }>();
 
+
+function handleGetOneNewSuggestion() {
+  if (confirmAction(`Are you sure you want to replace "${props.place.name}"?`)) {
+    alert('calling replace on ' + props.place.id);
+  }
+}
+
+function handleMakeReservation() {
+  alert('We\'re sorry, but this isn\'t implemented yet.');
+}
 </script>
 
 <template>
@@ -30,14 +41,14 @@ const props = defineProps<{
 
     <div class="place-actions">
       <div class="replace-btn">
-        <button type="button" class="btn btn-warning">Replace</button>
+        <button type="button" class="btn btn-warning" @click="handleGetOneNewSuggestion">Replace</button>
       </div>
       <div class="view-map-btn">
         <a :href="`https://www.google.com/maps/search/?api=1&query=${place.realLocation?.lat},${place.realLocation?.lng}&query_place_id=${place.id}`"
           target="_blank" class="btn btn-primary">Map View</a>
       </div>
       <div class="reservation-btn">
-        <button type="button" class="btn btn-primary">Reservation</button>
+        <button type="button" class="btn btn-primary" @click="handleMakeReservation">Reservation</button>
       </div>
     </div>
   </div>

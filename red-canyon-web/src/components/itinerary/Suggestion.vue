@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import type { ItineraryInterface, Place as PlaceType } from '@/models/ItineraryInterface';
+import type { ItineraryInterface, Place as SuggestedPlace, Place as PlaceType } from '@/models/ItineraryInterface';
+
 import Place from './Place.vue';
 import { itSuggestionHeading } from '../../constants';
+import { confirmAction } from '../../utils/webUtils';
 
 let lengthOfTrip = 3;
 let placesPerDay = 2;
@@ -92,6 +94,16 @@ const dividePlaces = (places: Partial<PlaceType>[], perDay: number) => {
 let dividedPlaces = dividePlaces(suggestion.places, placesPerDay);
 console.log(dividedPlaces);
 
+function handleGetNewItinerary() {
+  if (confirmAction('Are you sure that you want to get a new suggested Itinerary? The current one will be lost')) {
+    alert(`Call get new itinerary for type (${suggestion.type.name})`);
+  }
+}
+
+function handleDownloadItinerary() {
+  alert('Thank you for using this Planner. Please enjoy your trip. Your itinerary will download shortly.');
+}
+
 </script>
 
 <template>
@@ -101,14 +113,13 @@ console.log(dividedPlaces);
       <h5 class="text-center">Your 3 Day Foodie trip to Prince Edward Island</h5>
     </div>
     <div class="itinerary-actions">
-      <span class="nav-link-icon d-block"><i class="ni ni-atom"></i></span>
       <div class="generate-new" title="New itinerary">
-        <button type="button" class="btn btn-warning">
+        <button type="button" class="btn btn-warning" @click="handleGetNewItinerary">
           <span class="fa fa-refresh"></span>
         </button>
       </div>
       <div class="download" title="Download itinerary">
-        <button type="button" class="btn btn-success">
+        <button type="button" class="btn btn-success" @click="handleDownloadItinerary">
           <i class="fa fa-download"></i>
         </button>
       </div>
