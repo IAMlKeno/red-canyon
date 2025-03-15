@@ -10,16 +10,12 @@ const props = defineProps<{
 <template>
   <div class="itinerary-place-wrapper">
     <div class="place-details">
-      <p>
       <h5>{{ place.name }}</h5>
-      </p>
-      <p>
       <ul>
         <li>{{ place.location }}</li>
         <li>Hours: 11am - 3pm</li>
       </ul>
-      </p>
-      <p>Description</p>
+      <p>{{ place.description ?? 'Description unavailable' }}</p>
     </div>
 
     <div class="place-rating">
@@ -48,6 +44,12 @@ const props = defineProps<{
 </template>
 
 <style scoped>
+@media (min-width: 374px) and (max-width: 991px) {
+  .place-actions {
+    row-gap: 10px;
+  }
+}
+
 .place-rating {
   display: flex;
   flex-direction: row;
@@ -72,18 +74,25 @@ const props = defineProps<{
 .itinerary-place-wrapper {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: space-evenly;
   border-bottom: 3px solid lightgray;
   border-radius: 2%;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .itinerary-place-wrapper .place-details {
   flex-grow: 2;
   text-align: left;
+  max-width: 70%;
+  min-width: 70%;
 }
 
 .itinerary-place-wrapper .place-rating {
   flex-grow: 1;
+  max-width: 15%;
+  min-width: 15%;
 }
 
 .place-actions {
@@ -101,4 +110,5 @@ const props = defineProps<{
   border-color: #FB6340;
   color: #FFF;
 }
+
 </style>

@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+
+import type { ItineraryType as Type } from '@/models/ItineraryInterface';
+
 import ItinerarySuggestion from "./ItinerarySuggestion.vue";
 import ItineraryType from '../components/itinerary/ItineraryType.vue'
 import Suggestion from '../components/itinerary/Suggestion.vue'
 
 const api = import.meta.env.VITE_API;
 
-let data = ref([]);
+let data = ref<Type[]>();
 let suggestion = ref(null)
 let suggestionLoading = ref(false)
 
@@ -19,7 +22,7 @@ async function fetchItineraryTypes() {
 }
 await fetchItineraryTypes()
 
-function handleRowClick(evt) {
+function handleRowClick(evt: { target: any; }) {
   const tar = evt.target;
   if (tar.tagName.toLowerCase() !== 'button') {
     const rowId = tar.parentElement.querySelector('td[class=type-id]').dataset.typeId;
@@ -27,9 +30,11 @@ function handleRowClick(evt) {
   }
 }
 
-function handleBtnClick(id) {
+function handleBtnClick(id: string, event: any) {
   event.preventDefault();
-  alert(`clicked ${id}`);
+  const approveChange = confirm("Are you sure?\nThis will erase your previously generated itinerary.");
+  
+  if (approveChange) alert(` change confirmed clicked ${id}`);
   // handleFetchSuggestion(id);
 }
 
@@ -51,7 +56,7 @@ async function handleFetchSuggestion(itineraryTypeId: string) {
           :title="type.name"
           :description="type.description"
           :duration="type.expectedDuration.hours"
-          @click="handleBtnClick(type.id)"
+          @click="handleBtnClick(type.id, $event)"
           class="clickable"
           />
     </div>
@@ -85,5 +90,11 @@ async function handleFetchSuggestion(itineraryTypeId: string) {
   .itinerary-grid .grid-item {
     margin-top: 10px;
     width: 30%;
+  }
+
+  @media (min-width: 374px) and (max-width: 991px) {
+    .itinerary-grid .grid-item {
+      flex-basis: 100%;
+    }
   }
 </style>

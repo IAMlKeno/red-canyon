@@ -20,7 +20,8 @@ let suggestion: ItineraryInterface = {
         lng: -63.293935700000006
       },
       location: '123 Somewhere street',
-      rating: 4.5
+      rating: 4.5,
+      description: "Open from May to October, this rustic, low-key eatery features classic seafood grub & outdoor seats.",
     },
     {
       id: 'place/UUID2',
@@ -30,7 +31,8 @@ let suggestion: ItineraryInterface = {
         lng: -63.293935700000006
       },
       location: '123 Somewhere street',
-      rating: 3
+      rating: 3,
+      description: "Yoo hoo its a pirates life for me."
     },
     {
       id: 'place/UUID3',
@@ -40,7 +42,8 @@ let suggestion: ItineraryInterface = {
         lng: -63.293935700000006
       },
       location: '123 Somewhere street',
-      rating: 5
+      rating: 5,
+      description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
     },
     {
       id: 'place/UUID4',
@@ -60,7 +63,8 @@ let suggestion: ItineraryInterface = {
         lng: -63.293935700000006
       },
       location: '123 Somewhere street',
-      rating: 5
+      rating: 5,
+      description: "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout."
     },
     {
       id: 'place/UUID6',
@@ -70,7 +74,8 @@ let suggestion: ItineraryInterface = {
         lng: -63.293935700000006
       },
       location: '123 Somewhere street',
-      rating: 3.5
+      rating: 3.5,
+      description: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable."
     },
   ]
 };
@@ -97,12 +102,15 @@ console.log(dividedPlaces);
     </div>
     <div class="itinerary-actions">
       <span class="nav-link-icon d-block"><i class="ni ni-atom"></i></span>
-      <div class="generate-new">
-        Here
-        <i class="fa fa-refresh" ></i>
+      <div class="generate-new" title="New itinerary">
+        <button type="button" class="btn btn-warning">
+          <span class="fa fa-refresh"></span>
+        </button>
       </div>
-      <div class="download">
-        <i class="fa fa-download"></i>
+      <div class="download" title="Download itinerary">
+        <button type="button" class="btn btn-success">
+          <i class="fa fa-download"></i>
+        </button>
       </div>
     </div>
   </div>
@@ -167,5 +175,15 @@ console.log(dividedPlaces);
   .itinerary-header .itinerary-actions {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    gap: 5px;
+  }
+  .itinerary-actions button {
+    border-radius: 50%;
+  }
+  .btn-warning {
+    background-color: #FB6340;
+    border-color: #FB6340;
+    color: #FFF;
   }
 </style>

@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import WelcomeMessage from './components/WelcomeMessage.vue'
-import { welcomeMsg, subtitle } from './constants'
+import { RouterLink, RouterView } from 'vue-router';
+import { welcomeMsg, subtitle } from './constants';
+
+import WelcomeMessage from './components/WelcomeMessage.vue';
+import Footer from './components/Footer.vue';
 </script>
 
 <template>
@@ -19,7 +21,9 @@ import { welcomeMsg, subtitle } from './constants'
   </header>
 
   <div>
-  <RouterView /></div>
+    <RouterView />
+  </div>
+  <Footer />
 </template>
 
 <style scoped>
@@ -41,7 +45,7 @@ nav {
 }
 
 nav a.router-link-exact-active {
-  color: var(--color-text);
+  color: var(--vt-c-text-light-1);
 }
 
 nav a.router-link-exact-active:hover {
@@ -57,16 +61,11 @@ nav a {
 nav a:first-of-type {
   border: 0;
 }
-
 @media (min-width: 1024px) {
   header {
     display: flex;
     place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
+    justify-content: center;
   }
 
   header .wrapper {
@@ -77,8 +76,6 @@ nav a:first-of-type {
   }
 
   nav {
-    text-align: left;
-    margin-left: -1rem;
     font-size: 1rem;
 
     padding: 1rem 0;
