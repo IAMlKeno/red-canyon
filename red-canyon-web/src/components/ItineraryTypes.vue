@@ -3,21 +3,22 @@ import { ref } from 'vue'
 
 import type { ItineraryType as Type } from '@/models/ItineraryInterface';
 
-import ItinerarySuggestion from "./ItinerarySuggestion.vue";
 import ItineraryType from '../components/itinerary/ItineraryType.vue'
 import Suggestion from '../components/itinerary/Suggestion.vue'
+import ProgressBar from './common/ProgressBar.vue';
 
 const api = import.meta.env.VITE_API;
-
-let data = ref<Type[]>();
-let suggestion = ref(null)
-let suggestionLoading = ref(false)
+const itineraryTypes = ref<Type[]>();
+const suggestion = ref(null)
+const itineraryEngineInitiated = ref(false);
+const isSuggestionLoading = ref(false);
 
 async function fetchItineraryTypes() {
   try {
-    data = await (await fetch(`${api}/places/types`)).json()
+    itineraryTypes.value = await (await fetch(`${api}/places/types`)).json()
   } catch (e) {
-    console.log(`ERROR FETCHING TYPES: ${e}`)
+    console.log(`ERROR FETCHING TYPES: ${e}`);
+    // Show error loading component
   }
 }
 await fetchItineraryTypes()
@@ -33,15 +34,22 @@ function handleRowClick(evt: { target: any; }) {
 function handleBtnClick(id: string, event: any) {
   event.preventDefault();
   const approveChange = confirm("Are you sure?\nThis will erase your previously generated itinerary.");
-  
-  if (approveChange) alert(` change confirmed clicked ${id}`);
+
+  if (!approveChange) return;
+
+  alert(`change confirmed clicked ${id}`);
+  itineraryEngineInitiated.value = true;
+  isSuggestionLoading.value = true;
   // handleFetchSuggestion(id);
 }
 
+function finishLoading() {
+  isSuggestionLoading.value = false;
+}
+
 async function handleFetchSuggestion(itineraryTypeId: string) {
-  suggestionLoading.value = true;
   suggestion.value = await (await fetch(`${api}/places/suggestion/${itineraryTypeId}`)).json();
-  suggestionLoading.value = false;
+  finishLoading();
 }
 </script>
 
@@ -52,7 +60,7 @@ async function handleFetchSuggestion(itineraryTypeId: string) {
     <hr />
 
     <div class="grid itinerary-grid">
-      <ItineraryType v-for="type in data"
+      <ItineraryType v-for="type in itineraryTypes"
           :title="type.name"
           :description="type.description"
           :duration="type.expectedDuration.hours"
@@ -65,10 +73,17 @@ async function handleFetchSuggestion(itineraryTypeId: string) {
 
   </div>
   <hr />
-  <Suggestion />
-  <h1 v-show="suggestionLoading">Vue is generating a suggestion!</h1>
-  <div v-if="suggestion != null">
-    <ItinerarySuggestion :suggestion="suggestion" />
+  <div>{{ itineraryEngineInitiated }}</div>
+  <div v-if="itineraryEngineInitiated">
+    <h3 v-if="isSuggestionLoading">
+      We're generating your suggestion!
+      <button @click="finishLoading">Finish loading</button>
+      <ProgressBar />
+    </h3>
+    <div v-else>
+      <Suggestion />
+      <!-- <ItinerarySuggestion :suggestion="suggestion" /> -->
+    </div>
   </div>
 </template>
 
