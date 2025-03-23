@@ -1,24 +1,25 @@
 <script setup lang="ts">
+import axios from 'axios';
 import { ref } from 'vue'
 
 import type { ItineraryType as Type } from '@/models/ItineraryInterface';
 
+import ErrorLoading from './common/ErrorLoading.vue';
+import FormModal from './common/FormModal.vue';
+import ProgressBar from './common/ProgressBar.vue';
 import ItineraryType from '../components/itinerary/ItineraryType.vue'
 import Suggestion from '../components/itinerary/Suggestion.vue'
-import ProgressBar from './common/ProgressBar.vue';
-import FormModal from './common/FormModal.vue';
 import UserInfoForm from './forms/UserInfoForm.vue';
+
 import { userStore } from '@/userStore';
 import { confirmAction } from '@/utils/webUtils';
-import axios from 'axios';
 
 const api = import.meta.env.VITE_API;
 const itineraryTypes = ref<Type[]>();
-const suggestion = ref(null)
-const userTripInfo = ref({});
 const itineraryEngineInitiated = ref(false);
 const isSuggestionLoading = ref(false);
 const showUserInfoModal = ref(false);
+const isError = ref(false);
 
 async function fetchItineraryTypes() {
   try {
@@ -58,11 +59,13 @@ async function handleFetchSuggestion(itineraryTypeId: string) {
     {lengthOfTrip: userStore.lengthOfTrip, type: itineraryTypeId}
   ).then((res) => {
     userStore.currentItinerary = res.data;
+    isError.value = false;
     finishLoading();
     console.log(userStore.currentItinerary);
   }).catch((error) => {
     console.log(error);
     // show error. ErrorLoading.vue
+    isError.value = true;
   })
 
   // setTimeout(finishLoading, 5000);
@@ -114,9 +117,11 @@ const handleSubmitUserInfo = (event: any) => {
       We're generating your suggestion!
       <ProgressBar />
     </h3>
+    <div v-else-if="isSuggestionLoading == false && isError">
+      <ErrorLoading>Uh oh! 😨 There was an error loading the suggestion.</ErrorLoading>
+    </div>
     <div v-else>
       <Suggestion />
-      <!-- <ItinerarySuggestion :suggestion="suggestion" /> -->
     </div>
   </div>
 </template>
