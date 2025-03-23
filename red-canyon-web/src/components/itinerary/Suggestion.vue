@@ -19,7 +19,6 @@ const dividePlaces = (places: Partial<PlaceType>[], perDay: number) => {
 }
 
 let dividedPlaces = dividePlaces(suggestion.places, placesPerDay);
-console.log(dividedPlaces);
 
 function handleGetNewItinerary() {
   if (confirmAction('Are you sure that you want to get a new suggested Itinerary? The current one will be lost')) {
@@ -37,7 +36,7 @@ function handleDownloadItinerary() {
   <div class="itinerary-header">
     <div class="text">
       <h2 class="text-center">{{ itSuggestionHeading }}</h2>
-      <h5 class="text-center">Your 3 Day Foodie trip to Prince Edward Island</h5>
+      <h5 class="text-center">Your {{ lengthOfTrip }} Day {{ suggestion.type.name }} trip to Prince Edward Island</h5>
     </div>
     <div class="itinerary-actions">
       <div class="generate-new" title="New itinerary">

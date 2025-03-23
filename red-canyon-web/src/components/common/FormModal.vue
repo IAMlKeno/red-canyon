@@ -23,12 +23,31 @@ const defaultSubmitAction = (event: any) => {
   event.preventDefault();
   alert('attempting to submit form');
 }
+const defaultCancelAction = (event: any) => {
+  closeModal();
+  return;
+}
+
+function closeModal() {
+  const modalDiv = document.querySelector('div[class="modal"]');
+  if (modalDiv) {
+    modalDiv.classList.add('hidden');
+  }
+}
+function openModal() {
+  const modalDiv = document.querySelector('div[class*="modal"]');
+  if (modalDiv) {
+    modalDiv.classList.remove('hidden');
+  }
+}
+
+
 </script>
 
 <template>
   <!-- Modal -->
   <button type="button" id="modal-btn" class="btn btn-primary hidden invisible" data-toggle="modal"
-    data-target="#formModal">
+    data-target="#formModal" @click="openModal">
     Launch modal
   </button>
 
@@ -38,7 +57,7 @@ const defaultSubmitAction = (event: any) => {
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="formModalLabel">{{ props.title }}</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="closeModal">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -47,7 +66,7 @@ const defaultSubmitAction = (event: any) => {
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary"
-            @click="props.handleCancelSubmit != undefined ? props.handleCancelSubmit() : null" data-dismiss="modal">{{
+            @click="props.handleCancelSubmit != undefined ? props.handleCancelSubmit($event) : defaultCancelAction($event)" data-dismiss="modal">{{
               props.cancelTxt ?? "Close" }}</button>
           <button type="button" class="btn btn-primary"
             @click="props.handleSubmit != undefined ? props.handleSubmit($event) : defaultSubmitAction($event)">{{ props.confirmTxt
