@@ -6,12 +6,16 @@ import type { ItineraryType as Type } from '@/models/ItineraryInterface';
 import ItineraryType from '../components/itinerary/ItineraryType.vue'
 import Suggestion from '../components/itinerary/Suggestion.vue'
 import ProgressBar from './common/ProgressBar.vue';
+import FormModal from './common/FormModal.vue';
+import UserInfoForm from './forms/UserInfoForm.vue';
 
 const api = import.meta.env.VITE_API;
 const itineraryTypes = ref<Type[]>();
 const suggestion = ref(null)
+const userTripInfo = ref({});
 const itineraryEngineInitiated = ref(false);
 const isSuggestionLoading = ref(false);
+const showUserInfoModal = ref(false);
 
 async function fetchItineraryTypes() {
   try {
@@ -40,7 +44,7 @@ function handleBtnClick(id: string, event: any) {
   alert(`change confirmed clicked ${id}`);
   itineraryEngineInitiated.value = true;
   isSuggestionLoading.value = true;
-  // handleFetchSuggestion(id);
+  handleFetchSuggestion(id);
 }
 
 function finishLoading() {
@@ -48,8 +52,19 @@ function finishLoading() {
 }
 
 async function handleFetchSuggestion(itineraryTypeId: string) {
-  suggestion.value = await (await fetch(`${api}/places/suggestion/${itineraryTypeId}`)).json();
-  finishLoading();
+  // suggestion.value = await (await fetch(`${api}/places/suggestion/${itineraryTypeId}`)).json();
+
+  setTimeout(finishLoading, 5000);
+}
+
+function getUserInfo() {
+  showUserInfoModal.value = true;
+  document.getElementById('modal-btn')?.click();
+}
+
+const handleSubmitUserInfo = (event: any) => {
+  event.preventDefault();
+  console.log('submit');
 }
 </script>
 
@@ -64,20 +79,22 @@ async function handleFetchSuggestion(itineraryTypeId: string) {
           :title="type.name"
           :description="type.description"
           :duration="type.expectedDuration.hours"
-          @click="handleBtnClick(type.id, $event)"
+          @click="getUserInfo"
           class="clickable"
           />
     </div>
+  </div>
 
-    <hr />
-
+  <div v-show="showUserInfoModal" class="modal" style="display: block;">
+    <FormModal
+      title="Trip Info"
+      :handleSubmit="handleSubmitUserInfo"
+    ><UserInfoForm /></FormModal>
   </div>
   <hr />
-  <div>{{ itineraryEngineInitiated }}</div>
   <div v-if="itineraryEngineInitiated">
     <h3 v-if="isSuggestionLoading">
       We're generating your suggestion!
-      <button @click="finishLoading">Finish loading</button>
       <ProgressBar />
     </h3>
     <div v-else>
