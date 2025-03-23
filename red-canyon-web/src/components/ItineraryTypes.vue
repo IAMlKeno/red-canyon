@@ -8,6 +8,9 @@ import Suggestion from '../components/itinerary/Suggestion.vue'
 import ProgressBar from './common/ProgressBar.vue';
 import FormModal from './common/FormModal.vue';
 import UserInfoForm from './forms/UserInfoForm.vue';
+import { userStore } from '@/userStore';
+import { confirmAction } from '@/utils/webUtils';
+import axios from 'axios';
 
 const api = import.meta.env.VITE_API;
 const itineraryTypes = ref<Type[]>();
@@ -27,21 +30,17 @@ async function fetchItineraryTypes() {
 }
 await fetchItineraryTypes()
 
-function handleRowClick(evt: { target: any; }) {
-  const tar = evt.target;
-  if (tar.tagName.toLowerCase() !== 'button') {
-    const rowId = tar.parentElement.querySelector('td[class=type-id]').dataset.typeId;
-    handleFetchSuggestion(rowId);
-  }
-}
-
 function handleBtnClick(id: string, event: any) {
   event.preventDefault();
-  const approveChange = confirm("Are you sure?\nThis will erase your previously generated itinerary.");
+  let approveChange = false;
+  if (Object.keys(userStore.currentItinerary).length > 0) {
+    approveChange = confirmAction("Are you sure?\nThis will erase your previously generated itinerary.");
+  } else {
+    approveChange = true;
+  }
 
   if (!approveChange) return;
 
-  alert(`change confirmed clicked ${id}`);
   itineraryEngineInitiated.value = true;
   isSuggestionLoading.value = true;
   handleFetchSuggestion(id);
@@ -52,19 +51,37 @@ function finishLoading() {
 }
 
 async function handleFetchSuggestion(itineraryTypeId: string) {
-  // suggestion.value = await (await fetch(`${api}/places/suggestion/${itineraryTypeId}`)).json();
+  console.log(`id: ${userStore.itineraryTypeId}; Dates: ${userStore.date.startDate} - ${userStore.date.endDate}`);
 
-  setTimeout(finishLoading, 5000);
+  axios.post(
+    `${api}/places/v1/suggestion`,
+    {lengthOfTrip: userStore.lengthOfTrip, type: itineraryTypeId}
+  ).then((res) => {
+    userStore.currentItinerary = res.data;
+    finishLoading();
+    console.log(userStore.currentItinerary);
+  }).catch((error) => {
+    console.log(error);
+    // show error. ErrorLoading.vue
+  })
+
+  // setTimeout(finishLoading, 5000);
 }
 
-function getUserInfo() {
+function getUserInfo(typeId: string) {
   showUserInfoModal.value = true;
   document.getElementById('modal-btn')?.click();
+  userStore.itineraryTypeId = typeId;
+}
+
+function closeModal() {
+  showUserInfoModal.value = false;
+  document.querySelector('#formModal button[class="close"]')?.click();
 }
 
 const handleSubmitUserInfo = (event: any) => {
-  event.preventDefault();
-  console.log('submit');
+  closeModal();
+  handleBtnClick(userStore.itineraryTypeId, event);
 }
 </script>
 
@@ -79,7 +96,7 @@ const handleSubmitUserInfo = (event: any) => {
           :title="type.name"
           :description="type.description"
           :duration="type.expectedDuration.hours"
-          @click="getUserInfo"
+          @click="getUserInfo(type.id)"
           class="clickable"
           />
     </div>

@@ -19,7 +19,8 @@ const props = defineProps<{
   handleCancelSubmit?: Function;
 }>();
 
-const defaultSubmitAction = () => {
+const defaultSubmitAction = (event: any) => {
+  event.preventDefault();
   alert('attempting to submit form');
 }
 </script>
@@ -27,16 +28,16 @@ const defaultSubmitAction = () => {
 <template>
   <!-- Modal -->
   <button type="button" id="modal-btn" class="btn btn-primary hidden invisible" data-toggle="modal"
-    data-target="#exampleModal">
+    data-target="#formModal">
     Launch modal
   </button>
 
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">{{ props.title }}</h5>
+          <h5 class="modal-title" id="formModalLabel">{{ props.title }}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -49,7 +50,7 @@ const defaultSubmitAction = () => {
             @click="props.handleCancelSubmit != undefined ? props.handleCancelSubmit() : null" data-dismiss="modal">{{
               props.cancelTxt ?? "Close" }}</button>
           <button type="button" class="btn btn-primary"
-            @click="props.handleSubmit != undefined ? props.handleSubmit() : defaultSubmitAction()">{{ props.confirmTxt
+            @click="props.handleSubmit != undefined ? props.handleSubmit($event) : defaultSubmitAction($event)">{{ props.confirmTxt
             ?? "Save" }}</button>
         </div>
       </div>
