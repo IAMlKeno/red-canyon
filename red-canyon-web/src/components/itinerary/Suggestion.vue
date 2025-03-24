@@ -6,6 +6,7 @@ import Place from './Place.vue';
 import { itSuggestionHeading } from '../../constants';
 import { confirmAction } from '../../utils/webUtils';
 import { userStore } from '@/userStore';
+import { createPdf } from '@/utils/pdfUtils';
 
 let lengthOfTrip = userStore.lengthOfTrip;
 let placesPerDay = 2;
@@ -43,6 +44,8 @@ function handleGetNewItinerary() {
 
 function handleDownloadItinerary() {
   alert('Thank you for using this Planner. Please enjoy your trip. Your itinerary will download shortly.');
+  var docDefinition = { content: 'This is an sample PDF printed with pdfMake' };
+  createPdf(docDefinition.content);
 }
 </script>
 
