@@ -24,4 +24,5 @@ export interface ItineraryServiceInterface {
    * @param id Place id
    */
   viewPlace(id: string): Promise<Place | undefined>;
+  getOnePlace(type: ItineraryType, exclude?: string[]): Promise<Place[]>;
 }

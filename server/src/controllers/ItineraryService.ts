@@ -96,7 +96,26 @@ export class ItineraryService implements ItineraryServiceInterface {
     }
   }
 
-  async getPlacesFromGoogle(params: any) {
+  async getOnePlace(type: ItineraryType, exclude?: string[]): Promise<RedPlace[]> {
+    const retries = 3;
+    let isSearching = true;
+    let generatedPlace: RedPlace[];
+    let searchAttempts = 0;
+    while (isSearching) {
+      searchAttempts++;
+      generatedPlace = await this.getPlacesFromGoogle({
+        type: type,
+        max: 1,
+      });
+      console.log(generatedPlace);
+      if (generatedPlace[0].id != exclude[0] || searchAttempts == retries) {
+        isSearching = false;
+      }
+    }
+    return generatedPlace;
+  }
+
+  async getPlacesFromGoogle(params: any): Promise<RedPlace[]> {
     let generatedPlaces: RedPlace[] = [];
     let { type, max } = params;
 
