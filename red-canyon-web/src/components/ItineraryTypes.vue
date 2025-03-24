@@ -13,8 +13,8 @@ import UserInfoForm from './forms/UserInfoForm.vue';
 
 import { userStore } from '@/userStore';
 import { confirmAction } from '@/utils/webUtils';
+import { getASuggestion, getTypes } from '@/utils/api';
 
-const api = import.meta.env.VITE_API;
 const itineraryTypes = ref<Type[]>();
 const itineraryEngineInitiated = ref(false);
 const isSuggestionLoading = ref(false);
@@ -23,7 +23,7 @@ const isError = ref(false);
 
 async function fetchItineraryTypes() {
   try {
-    itineraryTypes.value = await (await fetch(`${api}/places/types`)).json()
+    itineraryTypes.value = (await getTypes()).data;
   } catch (e) {
     console.log(`ERROR FETCHING TYPES: ${e}`);
     // Show error loading component
@@ -44,29 +44,25 @@ function handleBtnClick(id: string, event: any) {
 
   itineraryEngineInitiated.value = true;
   isSuggestionLoading.value = true;
-  handleFetchSuggestion(id);
+  handleFetchSuggestion();
 }
 
 function finishLoading() {
   isSuggestionLoading.value = false;
 }
 
-async function handleFetchSuggestion(itineraryTypeId: string) {
-  console.log(`id: ${userStore.itineraryTypeId}; Dates: ${userStore.date.startDate} - ${userStore.date.endDate}`);
+async function handleFetchSuggestion() {
 
-  axios.post(
-    `${api}/places/v1/suggestion`,
-    {lengthOfTrip: userStore.lengthOfTrip, type: itineraryTypeId}
-  ).then((res) => {
-    userStore.currentItinerary = res.data;
-    isError.value = false;
-    finishLoading();
-    console.log(userStore.currentItinerary);
-  }).catch((error) => {
-    console.log(error);
-    // show error. ErrorLoading.vue
-    isError.value = true;
-  })
+  getASuggestion()
+    .then((res) => {
+      userStore.currentItinerary = res.data;
+      isError.value = false;
+      finishLoading();
+    }).catch((error) => {
+      console.log(error);
+      // show error. ErrorLoading.vue
+      isError.value = true;
+    })
 
   // setTimeout(finishLoading, 5000);
 }

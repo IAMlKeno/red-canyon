@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted, ref, watch } from 'vue';
 import type { ItineraryInterface, Place as PlaceType } from '@/models/ItineraryInterface';
 
 import Place from './Place.vue';
@@ -8,35 +9,48 @@ import { userStore } from '@/userStore';
 
 let lengthOfTrip = userStore.lengthOfTrip;
 let placesPerDay = 2;
-let suggestion: ItineraryInterface = userStore.currentItinerary;
+const suggestion = ref<ItineraryInterface|null>(null);
+const dividedPlaces = ref<Partial<PlaceType>[][]>([]);
 
-const dividePlaces = (places: Partial<PlaceType>[], perDay: number) => {
+onMounted(() => {
+  suggestion.value = userStore.currentItinerary;
+  dividePlaces(suggestion.value.places, placesPerDay);
+});
+
+watch(
+  () => userStore.currentItinerary,
+  (oldValue, newValue) => {
+    suggestion.value = newValue;
+    dividePlaces(suggestion.value.places, placesPerDay);
+  },
+  { deep: true }
+)
+
+function dividePlaces(places: Partial<PlaceType>[], perDay: number) {
   const result = [];
   for (let i = 0; i < places.length; i += perDay) {
     result.push(places.slice(i, i + perDay));
   }
-  return result;
+  dividedPlaces.value = result;
 }
 
-let dividedPlaces = dividePlaces(suggestion.places, placesPerDay);
-
 function handleGetNewItinerary() {
-  if (confirmAction('Are you sure that you want to get a new suggested Itinerary? The current one will be lost')) {
-    alert(`Call get new itinerary for type (${suggestion.type.name})`);
+  const msg: string = 'Are you sure that you want to get a new suggested Itinerary? The current one will be lost';
+  if (suggestion.value != null && confirmAction(msg)) {
+    alert(`Call get new itinerary for type (${suggestion.value.type.name})`);
   }
 }
 
 function handleDownloadItinerary() {
   alert('Thank you for using this Planner. Please enjoy your trip. Your itinerary will download shortly.');
 }
-
 </script>
 
 <template>
   <div class="itinerary-header">
     <div class="text">
       <h2 class="text-center">{{ itSuggestionHeading }}</h2>
-      <h5 class="text-center">Your {{ lengthOfTrip }} Day {{ suggestion.type.name }} trip to Prince Edward Island</h5>
+      <h5 class="text-center">Your {{ lengthOfTrip }}-day {{ suggestion != null ? suggestion.type.name : 'N/A' }} trip to Prince Edward Island</h5>
     </div>
     <div class="itinerary-actions">
       <div class="generate-new" title="New itinerary">

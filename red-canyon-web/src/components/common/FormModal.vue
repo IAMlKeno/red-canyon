@@ -41,7 +41,6 @@ function openModal() {
   }
 }
 
-
 </script>
 
 <template>
