@@ -67,8 +67,11 @@ router.post('/v1/suggestion', async (req, res) => {
 
 router.post('/v1/replace', async (req, res) => {
   let { type, exclude } = req.body;
-  console.log(`PASSED TYPE ID ${type}`);
 
+  if (type == undefined) {
+    res.status(400).send("A place type is required before replacing any.");
+    return;
+  }
   if (exclude == undefined || exclude.length == 0) {
     res.status(400).send("A list of place ids is required before replacing any.");
     return;

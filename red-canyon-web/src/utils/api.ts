@@ -19,8 +19,10 @@ export async function replaceOne(placeId: string) {
     throw Error('Place Id is required before replacing.');
   }
 
+  const placeIds = userStore.currentItinerary.places.length > 0 ? userStore.currentItinerary.places.map(place => place.id) : [placeId];
+
   return axios.post(
     `${API}/places/v1/replace`,
-    { type: userStore.currentItinerary.type.id, exclude: [placeId] }
+    { type: userStore.currentItinerary.type.id, exclude: placeIds }
   );
 }

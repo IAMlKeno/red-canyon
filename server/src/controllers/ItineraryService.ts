@@ -107,8 +107,10 @@ export class ItineraryService implements ItineraryServiceInterface {
         type: type,
         max: 1,
       });
-      console.log(generatedPlace);
-      if (generatedPlace[0].id != exclude[0] || searchAttempts == retries) {
+
+      // search redis first
+
+      if (searchAttempts == retries || exclude.find((placeId) => generatedPlace[0].id != placeId) == undefined) {
         isSearching = false;
       }
     }
