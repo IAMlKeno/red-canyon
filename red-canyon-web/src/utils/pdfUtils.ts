@@ -1,19 +1,14 @@
-import { userStore } from '@/userStore';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import type { TDocumentDefinitions } from 'pdfmake/interfaces';
-import { dividePlaces, getUserFriendlyDate } from './webUtils';
-import { placesPerDay } from '@/constants';
+
+import { userStore } from '@/userStore';
 import type { Place } from '@/models/ItineraryInterface';
+import { dividePlaces, getUserFriendlyDate } from './webUtils';
 
 (pdfMake as any).vfs = pdfFonts.vfs;
 
 export const createPdf = (text: string): Promise<void> => {
-  // const docDefinition = {
-  //   content: [
-  //     { text: text },
-  //   ]
-  // };
   const docDefinition = buildPdfDoc() as TDocumentDefinitions;
 
   const pdfDocGenerator = pdfMake.createPdf(docDefinition);
@@ -24,15 +19,6 @@ export const createPdf = (text: string): Promise<void> => {
     pdfDocGenerator.open(); // Opens in a new tab
     // pdfDocGenerator.print(); 
 
-    // pdfDocGenerator.on('error', (err) => {
-    //   console.error('Error creating PDF:', err);
-    //   reject(err);
-    // });
-
-    // pdfDocGenerator.on('end', () => {
-    //   console.log('PDF generated successfully');
-    //   resolve();
-    // });
   });
 };
 
@@ -42,7 +28,15 @@ function buildPdfDoc() {
   const itinerary = userStore.currentItinerary
 
   let doc: Record<string, any> = {};
-  doc['header'] = `Your suggested itinerary for ${getUserFriendlyDate(userStore.date.startDate)} to ${getUserFriendlyDate(userStore.date.endDate)}`;
+  doc['header'] = [{
+    text: `Your suggested itinerary`,
+    style: {
+      fontSize: 20,
+      bold: true
+    },
+    alignment: 'center',
+    // marginTop: 20,
+  }];
 
   const dividedPlaces = dividePlaces(itinerary.places);
   const days: Array<any> = [];
@@ -51,13 +45,31 @@ function buildPdfDoc() {
     days.push(`Day ${index + 1}:`);
     const activities: Record<string, string[]> = {ul: []};
     dayAndPlaces.forEach((place: Partial<Place>) => {
-      activities.ul.push(place.name ?? 'Name Unavailable');
+      const line: string = place.name != undefined
+          ? `${place.name} (${place.location})`
+          : 'Name Unavailable';
+      activities.ul.push(line);
     });
     days.push(activities);
   });
 
-  doc['content'] = days;
-  doc['footer'] = 'Brought to you by Avanti Insieme - Powered by Google';
+  const preContent = [
+    {
+      text: `${getUserFriendlyDate(userStore.date.startDate)} to ${getUserFriendlyDate(userStore.date.endDate)}`,
+      alignment: 'center',
+    }
+  ];
+
+  doc['content'] = [...preContent, ...days];
+  doc['footer'] = [{
+    text: 'Brought to you by Avanti Insieme - Powered by Google',
+    style: {
+      fontSize: 12
+    },
+    italic: true,
+    alignment: 'right',
+    margin: [0, 0, 10, 10],
+  }];
 
   return doc;
 }

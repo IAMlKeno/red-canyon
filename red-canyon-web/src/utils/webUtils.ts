@@ -6,7 +6,9 @@ export function confirmAction(msg: string): boolean {
 }
 
 export function getUserFriendlyDate(date: Date): string {
-  return Intl.DateTimeFormat('en-ca').format(date);
+  return Intl.DateTimeFormat('en-ca', {
+    dateStyle: "full",
+  }).format(date);
 }
 
 export function dividePlaces(places: Partial<Place>[]): Partial<Place>[][] {
