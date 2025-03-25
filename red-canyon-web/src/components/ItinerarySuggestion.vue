@@ -8,5 +8,5 @@ const props = defineProps<{
 
 <template>
   <h2 class="text-center">{{ itSuggestionHeading }}</h2>
-  <div>{{ suggestion }}</div>
+  <div>{{ props.suggestion }}</div>
 </template>
