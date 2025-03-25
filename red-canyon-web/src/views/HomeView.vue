@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import ItineraryTypes from '../components/ItineraryTypes.vue'
-import { ref } from 'vue'
 
 </script>
 

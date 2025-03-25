@@ -11,6 +11,8 @@ const service: ItineraryServiceInterface = new ItineraryService();
 router.get('/types', async (req, res) => {
   let results = service.getItineraryTypes();
 
+  // console.log(results);
+
   if (results.length > 0) res.send(results).status(200);
   else res.send('No types found').status(404);
 });
@@ -57,6 +59,29 @@ router.post('/v1/suggestion', async (req, res) => {
     service.getAnItineraryByType(typeName, { length: lengthOfTrip })
         .then((suggestion) => {
           res.send(suggestion);
+        });
+  } catch (e) {
+    res.status(500).send('BAD REQUEST');
+  }
+});
+
+router.post('/v1/replace', async (req, res) => {
+  let { type, exclude } = req.body;
+
+  if (type == undefined) {
+    res.status(400).send("A place type is required before replacing any.");
+    return;
+  }
+  if (exclude == undefined || exclude.length == 0) {
+    res.status(400).send("A list of place ids is required before replacing any.");
+    return;
+  }
+
+  try {
+    let typeName = service.getItineraryTypeById(type);
+    service.getOnePlace(typeName, exclude)
+        .then((replacement) => {
+          res.send(replacement);
         });
   } catch (e) {
     res.status(500).send('BAD REQUEST');

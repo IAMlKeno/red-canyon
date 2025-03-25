@@ -1,68 +1,123 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import ItinerarySuggestion from "./ItinerarySuggestion.vue";
 
-const api = import.meta.env.VITE_API;
+import type { ItineraryType as Type } from '@/models/ItineraryInterface';
 
-let data = ref([]);
-let suggestion = ref(null)
-let suggestionLoading = ref(false)
+import ErrorLoading from './common/ErrorLoading.vue';
+import FormModal from './common/FormModal.vue';
+import ProgressBar from './common/ProgressBar.vue';
+import ItineraryType from '../components/itinerary/ItineraryType.vue'
+import Suggestion from '../components/itinerary/Suggestion.vue'
+import UserInfoForm from './forms/UserInfoForm.vue';
+
+import { userStore } from '@/userStore';
+import { confirmAction } from '@/utils/webUtils';
+import { getASuggestion, getTypes } from '@/utils/api';
+
+const itineraryTypes = ref<Type[]>();
+const itineraryEngineInitiated = ref(false);
+const isSuggestionLoading = ref(false);
+const showUserInfoModal = ref(false);
+const isError = ref(false);
 
 async function fetchItineraryTypes() {
   try {
-    data = await (await fetch(`${api}/places/types`)).json()
+    itineraryTypes.value = (await getTypes()).data;
   } catch (e) {
-    console.log(`ERROR FETCHING TYPES: ${e}`)
+    console.log(`ERROR FETCHING TYPES: ${e}`);
+    // Show error loading component
   }
 }
 await fetchItineraryTypes()
 
-function handleRowClick(evt) {
-  const tar = evt.target;
-  if (tar.tagName.toLowerCase() !== 'button') {
-    const rowId = tar.parentElement.querySelector('td[class=type-id]').dataset.typeId;
-    handleFetchSuggestion(rowId);
-  }
-}
-
-function handleBtnClick(id) {
+function handleBtnClick(id: string, event: any) {
   event.preventDefault();
-  handleFetchSuggestion(id);
+  let approveChange = false;
+  if (Object.keys(userStore.currentItinerary).length > 0) {
+    approveChange = confirmAction("Are you sure?\nThis will erase your previously generated itinerary.");
+  } else {
+    approveChange = true;
+  }
+
+  if (!approveChange) return;
+
+  itineraryEngineInitiated.value = true;
+  isSuggestionLoading.value = true;
+  handleFetchSuggestion();
 }
 
-async function handleFetchSuggestion(itineraryTypeId: string) {
-  suggestionLoading.value = true;
-  suggestion.value = await (await fetch(`${api}/places/suggestion/${itineraryTypeId}`)).json();
-  suggestionLoading.value = false;
+function finishLoading() {
+  isSuggestionLoading.value = false;
+}
+
+async function handleFetchSuggestion() {
+
+  getASuggestion()
+    .then((res) => {
+      userStore.currentItinerary = res.data;
+      isError.value = false;
+      finishLoading();
+    }).catch((error) => {
+      console.log(error);
+      // show error. ErrorLoading.vue
+      isError.value = true;
+    })
+
+  // setTimeout(finishLoading, 5000);
+}
+
+function getUserInfo(typeId: string) {
+  showUserInfoModal.value = true;
+  document.getElementById('modal-btn')?.click();
+  userStore.itineraryTypeId = typeId;
+}
+
+function closeModal() {
+  showUserInfoModal.value = false;
+  document.querySelector('#formModal button[class="close"]')?.click();
+}
+
+const handleSubmitUserInfo = (event: any) => {
+  closeModal();
+  handleBtnClick(userStore.itineraryTypeId, event);
 }
 </script>
 
 <template>
   <div class="it-card">
     <h2 class="it-header text-center">Itinerary Planner</h2>
-    <h5 class="it-sub-header text-center">Pick an itinerary type to get started!</h5>
+    <h5 class="it-sub-header text-center">Click one to get a suggestion!</h5>
     <hr />
-    <table class="table it-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Type</th>
-          <th class="text-center">Description</th>
-          <th class="text-center"><i class="material-icons">info_outline</i></th>
-        </tr>
-      </thead>
-      <tr v-for="type in data" class="type-row clickable" @click="handleRowClick">
-        <td class="type-id" v-bind:data-type-id="type.id">{{ type.id }}</td>
-        <td class="type-name">{{ type.name }}</td>
-        <td class="type-description text-center">{{ type.description }}</td>
-        <td class="type-action td-actions"><button class="btn button btn-info" @click="handleBtnClick(type.id)">Get an Itinerary</button></td>
-      </tr>
-    </table>
+
+    <div class="grid itinerary-grid">
+      <ItineraryType v-for="type in itineraryTypes"
+          :title="type.name"
+          :description="type.description"
+          :duration="type.expectedDuration.hours"
+          @click="getUserInfo(type.id)"
+          class="clickable"
+          />
+    </div>
+  </div>
+
+  <div v-show="showUserInfoModal" class="modal" style="display: block;">
+    <FormModal
+      title="Trip Info"
+      :handleSubmit="handleSubmitUserInfo"
+    ><UserInfoForm /></FormModal>
   </div>
   <hr />
-  <h1 v-show="suggestionLoading">Vue is generating a suggestion!</h1>
-  <div v-if="suggestion != null">
-    <ItinerarySuggestion :suggestion="suggestion" />
+  <div v-if="itineraryEngineInitiated">
+    <h3 v-if="isSuggestionLoading">
+      We're generating your suggestion!
+      <ProgressBar />
+    </h3>
+    <div v-else-if="isSuggestionLoading == false && isError">
+      <ErrorLoading>Uh oh! 😨 There was an error loading the suggestion.</ErrorLoading>
+    </div>
+    <div v-else>
+      <Suggestion />
+    </div>
   </div>
 </template>
 
@@ -73,5 +128,22 @@ async function handleFetchSuggestion(itineraryTypeId: string) {
   }
   .clickable:hover {
     cursor: pointer;
+    background-color: lightblue;
+    color: white;
+  }
+  .itinerary-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .itinerary-grid .grid-item {
+    margin-top: 10px;
+    width: 30%;
+  }
+
+  @media (min-width: 374px) and (max-width: 991px) {
+    .itinerary-grid .grid-item {
+      flex-basis: 100%;
+    }
   }
 </style>
