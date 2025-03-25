@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import axios from 'axios';
 import { ref } from 'vue'
 
 import type { ItineraryType as Type } from '@/models/ItineraryInterface';
