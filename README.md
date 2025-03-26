@@ -91,3 +91,10 @@ $ docker compose down
  ✔ Container red-canyon-server-1  Stopped
  ✔ Container red-canyon-web-1     Stopped
 ```
+
+
+### REDIS Schema and Indexing
+
+1. What will be stored in redis:
+  * Google places, categorized by type. Key will follow `places:${type}:${placeId}`
+  * The redis value for this will consist of: `{"id": "", "name": "string", "description": "string", "location": "string", "realLocation": { "lat": "number", "lng": "number" }, "rating": "number", "operatingHours":"[object]"`
