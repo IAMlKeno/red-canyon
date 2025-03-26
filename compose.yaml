@@ -4,7 +4,7 @@ networks:
 
 services:
   web:
-    container_name: vue-web
+    container_name: redcanyon-web
     build:
       context: red-canyon-web
       target: development
@@ -16,7 +16,7 @@ services:
     networks:
       - redcanyon-net
   server:
-    container_name: red-canyon-api
+    container_name: redcanyon-api
     ports:
       - 4200:4200
     expose:
@@ -35,14 +35,18 @@ services:
     networks:
       - redcanyon-net
   # https://zomro.com/blog/faq/301-kak-ustanovit-redis-v-docker#:~:text=Docker%20Compose%20will%20automatically%20download,yaml%20file.&text=You%20can%20connect%20to%20the,defined%20in%20the%20docker%2Dcompose.
+  # docker exec -it red-canyon-cache redis-cli
   cache:
-    container_name: red-canyon-cache
+    container_name: redcanyon-cache
     image: redis:latest
     environment:
       - REDIS_PASSWORD=password
       - REDIS_PORT=6379
       - REDIS_DATABASES=16
     restart: unless-stopped
+    ports:
+      - 6379:6379
+      - 8005:8001
     expose:
       - 6379
     volumes:
