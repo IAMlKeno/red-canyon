@@ -50,8 +50,8 @@ function handleBtnClick(id: string, event: any): void {
 
   Promise.all([
     handleFetchSuggestion(),
-    handleGetTuroRecommendation(),
     handleUpdateAdvertisementTitle(),
+    handleGetTuroRecommendation(),
   ]).then((res) => {
     showAdvertisement.value = true;
   }).catch((e) => {
@@ -70,7 +70,7 @@ function handleUpdateAdvertisementTitle(): void {
  */
 function handleGetTuroRecommendation(): void {
   const href: string = turoLinkBuilder(userStore.date.startDate, userStore.date.endDate)
-  advertisementContent.value = `<a href="${href}">Check this vehicle out!</a>`;
+  advertisementContent.value = `<a href="${href}" target="_blank">Check this featured host out!</a>`;
 }
 
 function finishLoading(): void {

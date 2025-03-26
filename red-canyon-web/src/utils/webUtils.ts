@@ -27,13 +27,15 @@ export function dividePlaces(places: Partial<Place>[]): Partial<Place>[][] {
  * @param end 
  * @returns valid turo link
  */
-export function turoLinkBuilder(start: Date, end: Date): string {
-  const endDate = `${end.getDate()}/${end.getDay()}/${end.getFullYear()}`;
-  const startDate = `${start.getDate()}/${start.getDay()}/${start.getFullYear()}`;
-  const searchRegion = 'PE';
-  const randomCar = getRandomCarRecommendation();
+export function turoLinkBuilder(start?: Date, end?: Date): string {
+  return turoHostLinkBuilder();
 
-  return `https://turo.com/ca/en/car-rental/canada/charlottetown-pe/${randomCar}?endDate=${endDate}&startDate=${startDate}&searchRegion=${searchRegion}`
+  // const endDate = `${end.getDate()}/${end.getDay()}/${end.getFullYear()}`;
+  // const startDate = `${start.getDate()}/${start.getDay()}/${start.getFullYear()}`;
+  // const searchRegion = 'PE';
+  // const randomCar = getRandomCarRecommendation();
+
+  // return `https://turo.com/ca/en/car-rental/canada/charlottetown-pe/${randomCar}?endDate=${endDate}&startDate=${startDate}&searchRegion=${searchRegion}`
   // https://turo.com/ca/en/car-rental/canada/charlottetown-pe/volkswagen/passat/2534681?endDate=07%2F27%2F2025&endTime=10%3A00&searchId=uaP1zw57&searchRegion=PE&startDate=07%2F25%2F2025&startTime=10%3A00
 }
 
@@ -44,4 +46,18 @@ export function turoLinkBuilder(start: Date, end: Date): string {
  */
 function getRandomCarRecommendation(): string {
   return 'hyundai/sonata/2026817';
+}
+
+/**
+ * Get a random turo host id.
+ *
+ * @returns A valid vehicle id for that can be used when building turo link
+ */
+function getRandomTuroHostId(): string {
+  return '42919014';
+}
+
+export function turoHostLinkBuilder(): string {
+  const hostId = getRandomTuroHostId();
+  return `https://turo.com/ca/en/drivers/${hostId}`;
 }
