@@ -20,8 +20,9 @@ const itineraryEngineInitiated = ref(false);
 const isSuggestionLoading = ref(false);
 const showUserInfoModal = ref(false);
 const isError = ref(false);
-const advertisement = ref('content from parent');
-const advertisementTitle = ref("Title from parent");
+const showAdvertisement = ref(false);
+const advertisementContent = ref('');
+const advertisementTitle = ref('');
 
 async function fetchItineraryTypes() {
   try {
@@ -33,11 +34,11 @@ async function fetchItineraryTypes() {
 }
 await fetchItineraryTypes()
 
-function handleBtnClick(id: string, event: any) {
+function handleBtnClick(id: string, event: any): void {
   event.preventDefault();
   let approveChange = false;
   if (Object.keys(userStore.currentItinerary).length > 0) {
-    approveChange = confirmAction("Are you sure?\nThis will erase your previously generated itinerary.");
+    approveChange = confirmAction("Are you sure?\nYour previously generated itinerary will be lost.");
   } else {
     approveChange = true;
   }
@@ -46,26 +47,37 @@ function handleBtnClick(id: string, event: any) {
 
   itineraryEngineInitiated.value = true;
   isSuggestionLoading.value = true;
-  handleFetchSuggestion();
-  handleGetTuroRecommendation();
-  handleUpdateAdvertisementTitle();
+
+  Promise.all([
+    handleFetchSuggestion(),
+    handleGetTuroRecommendation(),
+    handleUpdateAdvertisementTitle(),
+  ]).then((res) => {
+    showAdvertisement.value = true;
+  }).catch((e) => {
+    console.log(`Some error occurred process the itinerary builder: ${e}`);
+    showAdvertisement.value = false;
+  });
 }
 
-function handleUpdateAdvertisementTitle() {
+function handleUpdateAdvertisementTitle(): void {
   advertisementTitle.value = `Need a car rental for (${getUserFriendlyDate(userStore.date.startDate)} to ${getUserFriendlyDate(userStore.date.endDate)})?`;
 }
 
-function handleGetTuroRecommendation() {
+/**
+ * This may become an async call. If an http call is made
+ * to check the availability of the vehicle.
+ */
+function handleGetTuroRecommendation(): void {
   const href: string = turoLinkBuilder(userStore.date.startDate, userStore.date.endDate)
-  advertisement.value = `<a href="${href}">Check this vehicle out!</a>`;
+  advertisementContent.value = `<a href="${href}">Check this vehicle out!</a>`;
 }
 
-function finishLoading() {
+function finishLoading(): void {
   isSuggestionLoading.value = false;
 }
 
-async function handleFetchSuggestion() {
-
+async function handleFetchSuggestion(): Promise<void> {
   getASuggestion()
     .then((res) => {
       userStore.currentItinerary = res.data;
@@ -113,7 +125,11 @@ const handleSubmitUserInfo = (event: any) => {
           />
     </div>
   </div>
-  <QuickAdvertisement :title="advertisementTitle" :popoverContent="advertisement"/>
+
+  <div v-if="showAdvertisement">
+    <QuickAdvertisement :title="advertisementTitle" :popoverContent="advertisementContent"/>
+  </div>
+  <span v-else>------</span>
 
   <div v-show="showUserInfoModal" class="modal" style="display: block;">
     <FormModal
