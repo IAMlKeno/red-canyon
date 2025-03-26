@@ -6,6 +6,11 @@ This is the frontend implementation of the Red Canyon project. It uses Vuejs 3 a
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
 
+## Credit
+* [Argon Design System](https://vue3datepicker.com/)
+* [Popper](https://valgeirb.github.io/vue3-popper/)
+* [Vue Datepicker](https://vue3datepicker.com/)
+
 ## Type Support for `.vue` Imports in TS
 
 TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
