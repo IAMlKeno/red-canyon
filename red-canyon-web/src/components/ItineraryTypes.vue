@@ -11,14 +11,17 @@ import Suggestion from '../components/itinerary/Suggestion.vue'
 import UserInfoForm from './forms/UserInfoForm.vue';
 
 import { userStore } from '@/userStore';
-import { confirmAction } from '@/utils/webUtils';
+import { confirmAction, getUserFriendlyDate, turoLinkBuilder } from '@/utils/webUtils';
 import { getASuggestion, getTypes } from '@/utils/api';
+import QuickAdvertisement from './common/QuickAdvertisement.vue';
 
 const itineraryTypes = ref<Type[]>();
 const itineraryEngineInitiated = ref(false);
 const isSuggestionLoading = ref(false);
 const showUserInfoModal = ref(false);
 const isError = ref(false);
+const advertisement = ref('content from parent');
+const advertisementTitle = ref("Title from parent");
 
 async function fetchItineraryTypes() {
   try {
@@ -44,6 +47,17 @@ function handleBtnClick(id: string, event: any) {
   itineraryEngineInitiated.value = true;
   isSuggestionLoading.value = true;
   handleFetchSuggestion();
+  handleGetTuroRecommendation();
+  handleUpdateAdvertisementTitle();
+}
+
+function handleUpdateAdvertisementTitle() {
+  advertisementTitle.value = `Need a car rental for (${getUserFriendlyDate(userStore.date.startDate)} to ${getUserFriendlyDate(userStore.date.endDate)})?`;
+}
+
+function handleGetTuroRecommendation() {
+  const href: string = turoLinkBuilder(userStore.date.startDate, userStore.date.endDate)
+  advertisement.value = `<a href="${href}">Check this vehicle out!</a>`;
 }
 
 function finishLoading() {
@@ -99,6 +113,7 @@ const handleSubmitUserInfo = (event: any) => {
           />
     </div>
   </div>
+  <QuickAdvertisement :title="advertisementTitle" :popoverContent="advertisement"/>
 
   <div v-show="showUserInfoModal" class="modal" style="display: block;">
     <FormModal
