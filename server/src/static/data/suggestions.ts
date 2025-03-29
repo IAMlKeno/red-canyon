@@ -1,5 +1,5 @@
 import { ItineraryInterface } from "../../interfaces/ItineraryInterface";
-import { generateUuid } from "../../utils/utilMath";
+import { generateUuid } from "../../utils/mathUtil";
 import itineryTypes from "./itinerary";
 
 const suggestions: ItineraryInterface[] = [

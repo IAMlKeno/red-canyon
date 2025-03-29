@@ -1,11 +1,14 @@
 import express from "express";
-import { ItineraryService } from "../controllers/ItineraryService";
+import { ItineraryService } from "../services/ItineraryService";
 import { ItineraryServiceInterface } from "../interfaces/ItineraryServiceInterface";
-import { generateANumber } from "../utils/utilMath";
+import { generateANumber } from "../utils/mathUtil";
 import suggestions from "../static/data/suggestions";
+import { ItineraryType } from "../interfaces/ItineraryInterface";
+import { ItineraryHandler } from "../handlers/ItineraryHandler";
 
 const router = express.Router();
 const service: ItineraryServiceInterface = new ItineraryService();
+const handler: ItineraryHandler<typeof service> = new ItineraryHandler(service);
 
 // Get types
 router.get('/types', async (req, res) => {
@@ -55,11 +58,12 @@ router.post('/v1/suggestion', async (req, res) => {
   }
 
   try {
-    let typeName = service.getItineraryTypeById(type);
-    service.getAnItineraryByType(typeName, { length: lengthOfTrip })
-        .then((suggestion) => {
-          res.send(suggestion);
-        });
+    let typeName: ItineraryType = service.getItineraryTypeById(type);
+    // service.getAnItineraryByType(typeName, { length: lengthOfTrip })
+    handler.getAnItinerary(typeName, lengthOfTrip)
+      .then((suggestion) => {
+        res.send(suggestion);
+      });
   } catch (e) {
     res.status(500).send('BAD REQUEST');
   }
@@ -80,9 +84,9 @@ router.post('/v1/replace', async (req, res) => {
   try {
     let typeName = service.getItineraryTypeById(type);
     service.getOnePlace(typeName, exclude)
-        .then((replacement) => {
-          res.send(replacement);
-        });
+      .then((replacement) => {
+        res.send(replacement);
+      });
   } catch (e) {
     res.status(500).send('BAD REQUEST');
   }

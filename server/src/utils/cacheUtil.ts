@@ -1,15 +1,33 @@
 import 'dotenv/config';
 import { Place } from "../interfaces/ItineraryInterface";
-import { createClient, RedisClientType, SchemaFieldTypes } from 'redis';
+import { createClient, RedisClientType, SchemaFieldTypes, SearchOptions } from 'redis';
 
 /**
- * Constructs our Redis place key.
- * @param placeId The google placeId
- * @param typeName [Optional] The application-defined type of the place.
- * @returns string
+ * Store a place in cache using the google-provided placeId and the application
+ * defined type. The redis key is formed using the key from "this.makeRedisKey".
+ *
+ * @param place Place object to store
+ * @param type The type to categorize the place. This will be used for random selecting from cache.
  */
-export function makeRedisKey(placeId: string, typeName: string): string {
-  return `places:${typeName}:${placeId}`;
+export async function storePlaceInCache(place: Partial<Place>, type: string): Promise<void> {
+  const key: string = makeRedisKey(place.id, type);
+  getRedisClient()
+    .then((client: RedisClientType | null) => {
+      if (client != null) {
+        // add the type;
+        place['type'] = type;
+        client.json.set(key, '$', place);
+      }
+    })
+    .catch((e) => {
+      console.log(`FAILED WRITING TO CACHE ${e}`);
+    });
+}
+
+export async function existsInCache(placeId: string, type: string) {
+  let result = await getPlaceFromCacheById(placeId, type);
+
+  return Boolean(result);
 }
 
 /**
@@ -37,6 +55,36 @@ export async function getPlaceFromCacheById(placeId: string, type?: string): Pro
   }
 }
 
+export async function getRandomPlaceByTypeFromCache(type: string, max: number): Promise<RedisResultSet> {
+  const client: RedisClientType = await getRedisClient();
+  const results: RedisResultSet = await client.ft.search('$:places', `@type:{${type}}`, { LIMIT: { from: 0, size: max } });
+
+  return results;
+}
+
+/**
+ * Search the cache for a place by only the placeId.
+ *
+ * @param placeId google placeId,
+ * @returns An array of results used to create a place
+ */
+async function searchCacheById(placeId: string): Promise<any[]> {
+  const client: RedisClientType = await getRedisClient();
+  const results = await client.ft.search('$:places', `@placeId:{${placeId}}`);
+
+  return (results.total > 0) ? results.documents : [];
+}
+
+/**
+ * Constructs our Redis place key.
+ * @param placeId The google placeId
+ * @param typeName [Optional] The application-defined type of the place.
+ * @returns string
+ */
+export function makeRedisKey(placeId: string, typeName: string): string {
+  return `places:${typeName}:${placeId}`;
+}
+
 /**
  * Attempts to retrive a cache entry using the passed key.
  */
@@ -45,27 +93,6 @@ export async function getFromCache(key: string): Promise<Object> {
   if (client == null || key == '') return;
 
   return client.json.get(key);
-}
-
-/**
- * Store a place in cache.
- *
- * @param place Place object to stopre
- * @param key The key to store the place under - @see this.makeRedisKey
- * @param type The type to categorize the place. This will be used for random selecting from cache.
- */
-export async function storePlace(place: Partial<Place>, key: string, type: string): Promise<void> {
-  getRedisClient()
-    .then((client: RedisClientType | null) => {
-      if (client != null) {
-        // add the type;
-        place['type'] = type;
-        client.json.set(key, '$', place);
-      }
-    })
-    .catch((e) => {
-      console.log(`FAILED WRITING TO CACHE ${e}`);
-    });
 }
 
 /**
@@ -119,15 +146,12 @@ async function createPlaceIndex(client: RedisClientType): Promise<void> {
   });
 }
 
-/**
- * Search the cache for a place by only the placeId.
- *
- * @param placeId google placeId,
- * @returns An array of results used to create a place
- */
-async function searchCacheById( placeId: string): Promise<any[]> {
-  const client: RedisClientType = await getRedisClient();
-  const results = await client.ft.search('$:places', `@placeId:{${placeId}}`);
+type RedisResultSet = {
+  total: number;
+  documents: {
+      id: string;
+      value: any;
+  }[];
+};
 
-  return (results.total > 0) ? results.documents : [];
-}
+export async function isPlaceCacheEmpty(): Promise<boolean> {return false;}

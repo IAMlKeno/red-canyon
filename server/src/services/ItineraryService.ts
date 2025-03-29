@@ -3,16 +3,17 @@ import { GoogleAuth } from 'google-auth-library';
 import { PlacesClient, protos } from '@googlemaps/places';
 
 import { ItineraryType, ItineraryInterface, Place as RedPlace, placeMapper } from '../interfaces/ItineraryInterface';
-import { ItineraryServiceInterface } from '../interfaces/ItineraryServiceInterface';
 import itineryTypes from "../static/data/itinerary";
 import suggestions from "../static/data/suggestions";
-import { calculateNumberOfPlaces, generateUuid } from '../utils/utilMath';
+import { calculateCacheApiBias, calculateNumberOfPlaces, generateUuid } from '../utils/mathUtil';
 import { provinceCoordinatesMap } from '../constants';
 import { createNearbySearchRequest } from '../utils/placeUtils';
+import { PlaceCacheHandlerInterface } from '../interfaces/handlers/PlaceCacheHandlerInterface';
+import { RedisCacheHandler } from '../handlers/RedisCacheHandler';
+import { ItineraryServiceInterface } from '../interfaces/services/ItineraryServiceInterface';
 
 export class ItineraryService implements ItineraryServiceInterface {
 
-  private cachedItineraries: ItineraryInterface[];
   private itineraryTypes: ItineraryType[];
   private apiKey: string;
   private placeClient: PlacesClient;
@@ -27,10 +28,10 @@ export class ItineraryService implements ItineraryServiceInterface {
     'places.rating',
     'places.currentOpeningHours',
     'places.businessStatus',
-  ]
+  ];
+  private cacheService: PlaceCacheHandlerInterface;
 
   constructor() {
-    this.cachedItineraries = suggestions; // Load from redis.
     this.itineraryTypes = itineryTypes;
     this.apiKey = process.env['GOOGLE_API_KEY'];
 
@@ -47,6 +48,7 @@ export class ItineraryService implements ItineraryServiceInterface {
         radius: provinceCoordinatesMap.get(province).radius,
       }
     };
+    this.cacheService = new RedisCacheHandler();
   }
 
   getItineraryTypes(): ItineraryType[] {
@@ -61,14 +63,33 @@ export class ItineraryService implements ItineraryServiceInterface {
     return await this.getPlaceDetailsFromGoogle(id);
   }
 
-  async getAnItineraryByType(type: ItineraryType, ...additonalParams: any[]): Promise<ItineraryInterface> {
+  async getAnItineraryByType(type: ItineraryType, ...additionalParams: any[]): Promise<ItineraryInterface> {
     // Destructure parameters.
-    let { length } = additonalParams[0];
+    let { length, apiBias } = additionalParams[0];
 
-    let generatedPlaces = await this.getPlacesFromGoogle({
+    // attempt to get some places from cache first
+    let numOfPlaces = calculateNumberOfPlaces(length);
+    let { cachePlaces, apiPlaces } = calculateCacheApiBias(numOfPlaces, apiBias);
+
+    let cachedPlaces: RedPlace[] = await this.getPlacesFromCache({
       type: type,
-      max: calculateNumberOfPlaces(length),
+      max: cachePlaces, // ensure that null or undefined isn't returned.
     });
+
+    // If the cache lookup fails, get all places from the API.
+    if (cachedPlaces.length == 0) {
+      apiPlaces = numOfPlaces;
+    } else if ((apiPlaces + cachedPlaces.length) < numOfPlaces) {
+      // If the cache returns less results the the number requested
+      // get the remainder from the api.
+      apiPlaces += numOfPlaces - (apiPlaces + cachedPlaces.length);
+    }
+
+    let generatedPlaces: RedPlace[] = await this.getPlacesFromGoogle({
+      type: type,
+      max: apiPlaces ?? numOfPlaces, // ensure that null or undefined isn't returned.
+    });
+
     const generatedItinerary: ItineraryInterface = {
       id: generateUuid(),
       type: type,
@@ -117,7 +138,7 @@ export class ItineraryService implements ItineraryServiceInterface {
     return generatedPlace;
   }
 
-  async getPlacesFromGoogle(params: any): Promise<RedPlace[]> {
+  async getPlacesFromGoogle(params: { type: ItineraryType, max: number}): Promise<RedPlace[]> {
     let generatedPlaces: RedPlace[] = [];
     let { type, max } = params;
 
@@ -128,7 +149,12 @@ export class ItineraryService implements ItineraryServiceInterface {
       if (Object.keys(fetchedPlaces[0]).length > 0) {
         generatedPlaces = fetchedPlaces[0]
             .places
-            .map((googlePlace) => placeMapper(googlePlace));
+            .map((googlePlace) => {
+              let place = placeMapper(googlePlace);
+              // cache the place
+              this.cacheService.addAPlace(place, type.name);
+              return place;
+            });
       } else {
         throw Error('Not a usable response from google');
       }
@@ -138,6 +164,17 @@ export class ItineraryService implements ItineraryServiceInterface {
       console.log(`AN ERROR OCCURRED FETCHING ${e.toString()}`);
     } finally {
       return generatedPlaces;
+    }
+  }
+
+  private async getPlacesFromCache(params: any): Promise<RedPlace[]> {
+    let { type, max } = params;
+    try {
+      return this.cacheService.getPlaces(type, max);
+    } catch (e) {
+      console.log('CACHE LOOK UP FAILED IN THE SERVICE.');
+      console.log(e);
+      return [];
     }
   }
 

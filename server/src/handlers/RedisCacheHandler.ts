@@ -1,0 +1,56 @@
+import { PlaceCacheHandlerInterface } from "../interfaces/handlers/PlaceCacheHandlerInterface";
+import { Place } from "../interfaces/ItineraryInterface";
+import { existsInCache, getPlaceFromCacheById, getRandomPlaceByTypeFromCache, storePlaceInCache } from "../utils/cacheUtil";
+
+export class RedisCacheHandler implements PlaceCacheHandlerInterface {
+  async getAPlace(placeId?: string, type?: string): Promise<Place|undefined> {
+    if (placeId) {
+      // Get a place by id. An undefined type is handled.
+      return await getPlaceFromCacheById(placeId, type);
+    } else if (placeId == undefined && type) {
+      // Get a place randomly by type.
+      let place: Place | undefined = undefined;
+      try {
+        const placeResult = await getRandomPlaceByTypeFromCache(type, 1);
+        if (placeResult.total > 0) {
+          // place = placeMapper(placeResult.documents[0].value as protos.google.maps.places.v1.IPlace) Dont think this is needed as I'll be storing the objects as the Application's Place object
+          place = placeResult.documents[0].value as Place;
+        }
+      } catch (e) {
+        console.log('failed to find a place');
+      } finally { return place; }
+    } else {
+      const msg = 'Passing neither placeId or type is invalid. Either a placeId and type are needed.';
+      console.log(msg);
+      throw new Error(msg);
+    }
+  }
+
+  async getPlaces(type: string, max: number): Promise<Place[] | undefined> {
+    let places: Place[] = [];
+    try {
+      let results = await getRandomPlaceByTypeFromCache(type, max);
+      places = results.documents.map((place) => place.value as Place);
+    } catch(e) {
+      console.log(`Error searching places`);
+    } finally {
+      return places;
+    }
+  }
+
+  async addAPlace(place: Place, type: string): Promise<boolean> {
+    try {
+      // check if the place exists before caching
+      if (!existsInCache(place.id, type)) {
+        storePlaceInCache(place, type);
+      }
+      return true; // assume success storing.
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async searchPlaces(query: string): Promise<{ totalResults: number, results: Array<Place> }> {
+    throw new Error('not implemented');
+  }
+}
