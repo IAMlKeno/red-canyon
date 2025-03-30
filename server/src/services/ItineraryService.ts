@@ -4,7 +4,6 @@ import { PlacesClient, protos } from '@googlemaps/places';
 
 import { ItineraryType, ItineraryInterface, Place as RedPlace, placeMapper } from '../interfaces/ItineraryInterface';
 import itineryTypes from "../static/data/itinerary";
-import suggestions from "../static/data/suggestions";
 import { calculateCacheApiBias, calculateNumberOfPlaces, generateUuid } from '../utils/mathUtil';
 import { provinceCoordinatesMap } from '../constants';
 import { createNearbySearchRequest } from '../utils/placeUtils';
@@ -12,11 +11,10 @@ import { PlaceCacheHandlerInterface } from '../interfaces/handlers/PlaceCacheHan
 import { RedisCacheHandler } from '../handlers/RedisCacheHandler';
 import { ItineraryServiceInterface } from '../interfaces/services/ItineraryServiceInterface';
 
-export class ItineraryService implements ItineraryServiceInterface {
+export class ItineraryService<T extends PlacesClient> implements ItineraryServiceInterface {
 
   private itineraryTypes: ItineraryType[];
-  private apiKey: string;
-  private placeClient: PlacesClient;
+  // private apiKey: string;
   private locationRestriction: protos.google.maps.places.v1.SearchNearbyRequest.ILocationRestriction;
 
   public defaultFieldsUpdated: Array<string> = [
@@ -31,12 +29,12 @@ export class ItineraryService implements ItineraryServiceInterface {
   ];
   private cacheService: PlaceCacheHandlerInterface;
 
-  constructor() {
+  constructor(private placeClient: T) {
     this.itineraryTypes = itineryTypes;
-    this.apiKey = process.env['GOOGLE_API_KEY'];
+    // this.apiKey = process.env['GOOGLE_API_KEY'];
 
-    const auth = new GoogleAuth({apiKey: this.apiKey}); // jsonclient
-    this.placeClient = new PlacesClient({ auth });
+    // const auth = new GoogleAuth({apiKey: this.apiKey}); // jsonclient
+    // this.placeClient = new PlacesClient({ auth });
 
     const province = process.env['INTINERARY_LOCATION'];
     this.locationRestriction = {
