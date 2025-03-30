@@ -35,12 +35,15 @@ services:
     networks:
       - redcanyon-net
   # https://zomro.com/blog/faq/301-kak-ustanovit-redis-v-docker#:~:text=Docker%20Compose%20will%20automatically%20download,yaml%20file.&text=You%20can%20connect%20to%20the,defined%20in%20the%20docker%2Dcompose.
-  # docker exec -it red-canyon-cache redis-cli
+  # docker exec -it redcanyon-cache redis-cli
+  # redis/redis-stack contains both Redis Stack server and RedisInsight. This container is best for local development because you can use RedisInsight to visualize your data.
+  # redis/redis-stack-server provides Redis Stack but excludes RedisInsight. This container is best for production deployment.
+  # https://hub.docker.com/r/redis/redis-stack
   cache:
     container_name: redcanyon-cache
-    image: redis:latest
+    image: redis/redis-stack-server:latest
     environment:
-      - REDIS_PASSWORD=password
+      - REDIS_ARGS="--requirepass mypassword"
       - REDIS_PORT=6379
       - REDIS_DATABASES=16
     restart: unless-stopped

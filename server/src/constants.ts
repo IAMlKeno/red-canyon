@@ -13,3 +13,4 @@ export const provinceCoordinatesMap: Map<string, any> = new Map<string, any>([
 ]);
 export const DEFAULT_LANG: string = 'en';
 export const DEFAULT_REGION: string = 'ca';
+export const DEFAULT_API_BIAS: number = 0.7;

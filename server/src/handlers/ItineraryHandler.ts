@@ -10,15 +10,17 @@ export class ItineraryHandler<T extends ItineraryServiceInterface> {
   }
 
   async getTypes(): Promise<ItineraryType[]> {
-    return await this.service.getItineraryTypes();
+    return this.service.getItineraryTypes();
   }
 
   async getTypeById(id: string): Promise<ItineraryType | undefined> {
-    return await this.service.getItineraryTypeById(id);
+    return this.service.getItineraryTypeById(id);
   }
 
   async getOnePlace(type: ItineraryType, exclude?: string[]): Promise<Place | undefined> {
-    return await this.service.getOnePlace(type, exclude)[0] ?? undefined;
+    const ret = await this.service.getOnePlace(type, exclude);
+
+    return ret[0];
   }
 
 }

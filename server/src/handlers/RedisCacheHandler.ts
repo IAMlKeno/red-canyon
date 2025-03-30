@@ -1,6 +1,6 @@
 import { PlaceCacheHandlerInterface } from "../interfaces/handlers/PlaceCacheHandlerInterface";
 import { Place } from "../interfaces/ItineraryInterface";
-import { existsInCache, getPlaceFromCacheById, getRandomPlaceByTypeFromCache, storePlaceInCache } from "../utils/cacheUtil";
+import { existsInCache, getPlaceFromCacheById, getRandomPlaceByTypeFromCache, listIndexes, storePlaceInCache } from "../utils/cacheUtil";
 
 export class RedisCacheHandler implements PlaceCacheHandlerInterface {
   async getAPlace(placeId?: string, type?: string): Promise<Place|undefined> {
@@ -41,8 +41,12 @@ export class RedisCacheHandler implements PlaceCacheHandlerInterface {
   async addAPlace(place: Place, type: string): Promise<boolean> {
     try {
       // check if the place exists before caching
-      if (!existsInCache(place.id, type)) {
+      console.log(`checking if cache key exists`);
+      if (!(await existsInCache(place.id, type))) {
+        console.log(`not present, adding it`);
         storePlaceInCache(place, type);
+      } else {
+        console.log(`Might exists..., not adding to cache`);
       }
       return true; // assume success storing.
     } catch (e) {
@@ -53,4 +57,6 @@ export class RedisCacheHandler implements PlaceCacheHandlerInterface {
   async searchPlaces(query: string): Promise<{ totalResults: number, results: Array<Place> }> {
     throw new Error('not implemented');
   }
+
+  async listIndexes() { return await listIndexes(); }
 }

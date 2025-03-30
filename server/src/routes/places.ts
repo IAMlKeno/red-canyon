@@ -3,22 +3,25 @@ import express from "express";
 import { ItineraryService } from "../services/ItineraryService";
 import { generateANumber } from "../utils/mathUtil";
 import suggestions from "../static/data/suggestions";
-import { ItineraryType } from "../interfaces/ItineraryInterface";
+import { ItineraryInterface, ItineraryType } from "../interfaces/ItineraryInterface";
 import { ItineraryHandler } from "../handlers/ItineraryHandler";
 import { GoogleAuth } from 'google-auth-library';
 import { PlacesClient } from '@googlemaps/places';
 import { ItineraryServiceInterface } from '../interfaces/services/ItineraryServiceInterface';
+import { mockedPlacesClient } from '../../tests/__mocks__/MockPlacesClient';
+import { RedisCacheHandler } from '../handlers/RedisCacheHandler';
 
 
 const router = express.Router();
 
 const auth = new GoogleAuth({apiKey: process.env['GOOGLE_API_KEY']});
 const service: ItineraryServiceInterface = new ItineraryService(new PlacesClient({ auth }));
+// const service: ItineraryServiceInterface = new ItineraryService(mockedPlacesClient as PlacesClient);
 const handler: ItineraryHandler<typeof service> = new ItineraryHandler(service);
 
 // Get types
 router.get('/types', async (req, res) => {
-  handler.getTypes().then((typesResponse) => {
+  handler.getTypes().then((typesResponse: ItineraryType[]) => {
     if (typesResponse.length > 0) {
       res.send(typesResponse).status(200);
     } else {
@@ -28,7 +31,7 @@ router.get('/types', async (req, res) => {
 });
 
 router.get('/types/:id', async (req, res) => {
-  handler.getTypeById(req.params.id).then((typeResponse) => {
+  handler.getTypeById(req.params.id).then((typeResponse: ItineraryType | undefined) => {
     if (typeResponse == undefined) {
       res.send('NO RESULTS').status(404);
     } else {
@@ -38,8 +41,13 @@ router.get('/types/:id', async (req, res) => {
 
 });
 
+/**
+ * This application expects session and user data to be tracked
+ * and stored in the browser. With that in mind, its expected that the
+ * apiBias is adjust from the front end.
+ */
 router.post('/v1/suggestion', async (req, res) => {
-  let { lengthOfTrip, type } = req.body;
+  let { lengthOfTrip, type, apiBias } = req.body;
 
   if (type == undefined || lengthOfTrip == undefined) {
     res.status(400).send("Itinerary parameters are required");
@@ -47,11 +55,12 @@ router.post('/v1/suggestion', async (req, res) => {
   }
 
   try {
-    let typeName: ItineraryType = service.getItineraryTypeById(type);
-    handler.getAnItinerary(typeName, lengthOfTrip)
-      .then((suggestion) => {
-        res.send(suggestion);
-      });
+    handler.getTypeById(type).then((typeResponse: ItineraryType) => {
+      handler.getAnItinerary(typeResponse, lengthOfTrip)
+        .then((suggestion: ItineraryInterface) => {
+          res.send(suggestion);
+        });
+    });
   } catch (e) {
     res.status(500).send('BAD REQUEST');
   }
@@ -70,12 +79,14 @@ router.post('/v1/replace', async (req, res) => {
   }
 
   try {
-    handler.getTypeById(type).then((typeObj) => {
-      handler.getOnePlace(typeObj, exclude)
-        .then((replacement) => {
-          res.send(replacement);
-        });
-    });
+    let typeObj = await handler.getTypeById(type);
+    let replacement = await handler.getOnePlace(typeObj, exclude);
+      // .then((replacement) => {
+        console.log(`ROUTE one`);
+        console.log(`Type: ${typeObj.name}`);
+        console.log(replacement);
+        res.send(replacement);
+      // });
   } catch (e) {
     res.status(500).send('BAD REQUEST');
   }
@@ -101,6 +112,20 @@ router.get('/suggestion/:placeType', async (req, res) => {
   } catch (e) {
     res.send('BAD REQUEST').status(500);
   }
+});
+
+router.post('/v1/test/cache', async (req, res) => {
+  let obj = req.body.obj;
+  const cacheHandler: RedisCacheHandler = new RedisCacheHandler();
+  cacheHandler.addAPlace(suggestions[0].places[1], suggestions[0].type.name);
+  res.send('cached something');
+});
+
+router.get('/v1/cache/list', async (req, res) => {
+  // let obj = req.body.obj;
+  const cacheHandler: RedisCacheHandler = new RedisCacheHandler();
+  let r = await cacheHandler.listIndexes();
+  res.send(r);
 });
 
 export default router;

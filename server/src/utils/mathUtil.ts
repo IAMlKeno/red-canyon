@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { DEFAULT_PLACES_PER_DAY } from "../constants";
+import { DEFAULT_API_BIAS, DEFAULT_PLACES_PER_DAY } from "../constants";
 
 export function generateANumber(max = 3): number {
   let number = Math.floor(Math.random() * max);
@@ -25,7 +25,7 @@ export function calculateNumberOfPlaces(days: number = 1): number {
  * @param apiBias A number between 0 and 1 used to decide the percentage bais "for"
  *  the api. Defaults to 1.
  */
-export function calculateCacheApiBias(placesToGet: number, apiBias: number = 1): { cachePlaces: number, apiPlaces: number } {
+export function calculateCacheApiBias(placesToGet: number, apiBias: number = DEFAULT_API_BIAS): { cachePlaces: number, apiPlaces: number } {
   try {
     let apiPlaces: number = Math.ceil(placesToGet * apiBias);
     let cachePlaces: number = placesToGet - apiPlaces;

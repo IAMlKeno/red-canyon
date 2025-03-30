@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import { GoogleAuth } from 'google-auth-library';
 import { PlacesClient, protos } from '@googlemaps/places';
 
 import { ItineraryType, ItineraryInterface, Place as RedPlace, placeMapper } from '../interfaces/ItineraryInterface';
@@ -14,7 +13,6 @@ import { ItineraryServiceInterface } from '../interfaces/services/ItineraryServi
 export class ItineraryService<T extends PlacesClient> implements ItineraryServiceInterface {
 
   private itineraryTypes: ItineraryType[];
-  // private apiKey: string;
   private locationRestriction: protos.google.maps.places.v1.SearchNearbyRequest.ILocationRestriction;
 
   public defaultFieldsUpdated: Array<string> = [
@@ -31,10 +29,6 @@ export class ItineraryService<T extends PlacesClient> implements ItineraryServic
 
   constructor(private placeClient: T) {
     this.itineraryTypes = itineryTypes;
-    // this.apiKey = process.env['GOOGLE_API_KEY'];
-
-    // const auth = new GoogleAuth({apiKey: this.apiKey}); // jsonclient
-    // this.placeClient = new PlacesClient({ auth });
 
     const province = process.env['INTINERARY_LOCATION'];
     this.locationRestriction = {
@@ -116,24 +110,33 @@ export class ItineraryService<T extends PlacesClient> implements ItineraryServic
   }
 
   async getOnePlace(type: ItineraryType, exclude?: string[]): Promise<RedPlace[]> {
-    const retries = 3;
+    const retries = 0;
     let isSearching = true;
     let generatedPlace: RedPlace[];
     let searchAttempts = 0;
-    while (isSearching) {
-      searchAttempts++;
-      generatedPlace = await this.getPlacesFromGoogle({
-        type: type,
-        max: 1,
-      });
+    console.log(`getting on place`);
 
-      // search redis first
+    try {
+      while (isSearching) {
+        searchAttempts++;
+        generatedPlace = await this.getPlacesFromGoogle({
+          type: type,
+          max: 1,
+        });
+        console.log(generatedPlace);
+        // search redis first
 
-      if (searchAttempts == retries || exclude.find((placeId) => generatedPlace[0].id != placeId) == undefined) {
-        isSearching = false;
+        if (searchAttempts >= retries || (Array.isArray(exclude) && exclude.length > 0 && exclude.find((placeId) => generatedPlace[0].id != placeId) == undefined)) {
+          isSearching = false;
+          break;
+        }
       }
+    } catch (e) {
+      console.log(`FAILED to get one ${e}`);
     }
-    return generatedPlace;
+    finally {
+      return generatedPlace;
+    }
   }
 
   async getPlacesFromGoogle(params: { type: ItineraryType, max: number}): Promise<RedPlace[]> {
@@ -150,9 +153,9 @@ export class ItineraryService<T extends PlacesClient> implements ItineraryServic
             .map((googlePlace) => {
               let place = placeMapper(googlePlace);
               // cache the place
-              this.cacheService.addAPlace(place, type.name);
               return place;
             });
+        this.cachePlaces(generatedPlaces, type.name);
       } else {
         throw Error('Not a usable response from google');
       }
@@ -192,5 +195,10 @@ export class ItineraryService<T extends PlacesClient> implements ItineraryServic
         },
       }
     };
+  }
+
+  private async cachePlaces(places: RedPlace[], type: string) {
+    if (!places || places.length <= 0) return;
+    places.forEach((place) => this.cacheService.addAPlace(place, type));
   }
 }
