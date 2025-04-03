@@ -1,6 +1,12 @@
 import { PlaceCacheHandlerInterface } from "../interfaces/handlers/PlaceCacheHandlerInterface";
 import { Place } from "../interfaces/ItineraryInterface";
-import { existsInCache, getPlaceFromCacheById, getRandomPlaceByTypeFromCache, listIndexes, storePlaceInCache } from "../utils/cacheUtil";
+import {
+  existsInCache,
+  getPlaceFromCacheById,
+  getRandomPlaceByTypeFromCache,
+  listIndexes,
+  listIndexesH,
+  storePlaceInCache } from "../utils/cacheUtil";
 
 export class RedisCacheHandler implements PlaceCacheHandlerInterface {
   async getAPlace(placeId?: string, type?: string): Promise<Place|undefined> {
@@ -30,7 +36,7 @@ export class RedisCacheHandler implements PlaceCacheHandlerInterface {
     let places: Place[] = [];
     try {
       let results = await getRandomPlaceByTypeFromCache(type, max);
-      places = results.documents.map((place) => place.value as Place);
+      places = results.documents.map((place: any) => place.value as Place);
     } catch(e) {
       console.log(`Error searching places`);
     } finally {
@@ -58,5 +64,5 @@ export class RedisCacheHandler implements PlaceCacheHandlerInterface {
     throw new Error('not implemented');
   }
 
-  async listIndexes() { return await listIndexes(); }
+  async listIndexes() { return await listIndexesH(); }
 }

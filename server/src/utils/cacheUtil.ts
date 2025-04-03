@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { Place } from "../interfaces/ItineraryInterface";
 import { createClient, RedisClientType, SchemaFieldTypes } from 'redis';
-import { RedisResultSet } from '../services/RedisCacheService';
+import { RedisResultSet } from '../types/cache-types';
 
 /**
  * Store a place in cache using the google-provided placeId and the application
@@ -30,7 +30,6 @@ export async function storePlaceInCache(place: Partial<Place>, type: string): Pr
 
 export async function existsInCache(placeId: string, type: string) {
   let result = await getPlaceFromCacheById(placeId, type);
-  console.log(`does obj exist in cache ${Boolean(result)}`);
 
   return Boolean(result);
 }
@@ -105,9 +104,7 @@ export function makeRedisKey(placeId: string, typeName: string): string {
  */
 export async function getFromCache(key: string): Promise<Object> {
   const client: any = await getRedisClient();
-  console.log(`getfrom cache ${client}`);
   if (client == null || key == '') return;
-  // console.log(`getfrom cache ${client}`);
 
   return client.json.get(key);
 }
@@ -120,12 +117,14 @@ export async function getFromCache(key: string): Promise<Object> {
 async function getRedisClient(): Promise<any | null> {
   const retries = 3;
   let attempt = 1;
-  while (attempt <= 3) {
+  let client = undefined;
+  while (attempt <= 3 || client == undefined) {
     try {
       attempt++;
       console.log(`attempting to connect to redis using url ${process.env['NODE_REDIS']}`);
-      const client = createClient({ url: process.env['NODE_REDIS'] });
+      client = createClient({ url: process.env['NODE_REDIS'] });
       await client.connect();
+
       createPlaceIndex(client);
 
       return client;
@@ -138,8 +137,10 @@ async function getRedisClient(): Promise<any | null> {
   }
 }
 
-export async function listIndexes(): Promise<Array<string>> {
-  const client = await getRedisClient();
+export async function listIndexesH(): Promise<Array<string>> {
+  return await listIndexes(await getRedisClient());
+}
+export async function listIndexes(client: any): Promise<Array<string>> {
   return await client.ft._LIST();
 }
 
@@ -158,49 +159,54 @@ export async function listIndexes(): Promise<Array<string>> {
 async function createPlaceIndex(client: any): Promise<void> {
   console.log(`attempting to create indexes`);
 
-  const indexes: Array<string> = await client.ft._LIST();
-  const createIndexFunctions = ['Foodie', 'Action', 'Adventure']
-    .map((uCType) => {
+  const indexes: Array<string> = await listIndexes(client);
+  ['Foodie', 'Action', 'Adventure']
+    .forEach(async (uCType) => {
       const type = uCType.toLowerCase();
       let indexStr = `places:${type}`;
-      return async () => {
-        try {
-          if (indexes.includes(indexStr)) {
-            console.log(`Index: ${indexStr} doesnt exist, creating it`);
-            client.ft.create(indexStr, {
-              id: SchemaFieldTypes.TEXT,
-              name: SchemaFieldTypes.TEXT,
-              type: SchemaFieldTypes.TEXT,
-            }, {
-              ON: 'JSON',
-              PREFIX: `places:${type}:`
-            })
-          } else {
-            console.log(`Index: ${indexStr} exist, nothing to do`);
-          }
-        } catch(e) {
-          console.log(`FAILED TO CREATE INDEX: ${indexStr}: ${e}`);
+      try {
+        if (!indexes.includes(indexStr)) {
+          console.log(`Index: ${indexStr} doesnt exist, creating it`);
+          await client.ft.create(indexStr, {
+            id: SchemaFieldTypes.TEXT,
+            name: SchemaFieldTypes.TEXT,
+            type: SchemaFieldTypes.TEXT,
+          }, {
+            ON: 'JSON',
+            PREFIX: `places:${type}:`
+          });
+        } else {
+          console.log(`Index: ${indexStr} exist, nothing to do`);
         }
+      } catch(e) {
+        console.log(`FAILED TO CREATE INDEX: ${indexStr}: ${e}`);
       }
     });
-  Promise.all(createIndexFunctions);
-  // let createIndexFunctions = types.map();
-  // types.forEach(async (type: string) => {
-  //   let indexStr = `places:${type}`;
-  //   const indexes: Array<string> = await client.ft._LIST();
-  //   if (indexes.includes(indexStr)) {
-  //     Promise.all([
-  //       client.ft.create(indexStr, {
-  //         id: SchemaFieldTypes.TEXT,
-  //         name: SchemaFieldTypes.TEXT,
-  //         type: SchemaFieldTypes.TEXT,
-  //       }, {
-  //           ON: 'JSON',
-  //           PREFIX: `places:${type}:`
-  //       }),
-  //     ]);
-  //   }
-  // });
+  // const createIndexFunctions = ['Foodie', 'Action', 'Adventure']
+  //   .map((uCType) => {
+  //     const type = uCType.toLowerCase();
+  //     let indexStr = `places:${type}`;
+  //     return async () => {
+  //       try {
+  //         // if (indexes.includes(indexStr)) {
+  //           console.log(`Index: ${indexStr} doesnt exist, creating it`);
+  //           client.ft.create(indexStr, {
+  //             id: SchemaFieldTypes.TEXT,
+  //             name: SchemaFieldTypes.TEXT,
+  //             type: SchemaFieldTypes.TEXT,
+  //           }, {
+  //             ON: 'JSON',
+  //             PREFIX: `places:${type}:`
+  //           })
+  //         // } else {
+  //         //   console.log(`Index: ${indexStr} exist, nothing to do`);
+  //         // }
+  //       } catch(e) {
+  //         console.log(`FAILED TO CREATE INDEX: ${indexStr}: ${e}`);
+  //       }
+  //     }
+  //   });
+  // Promise.all(createIndexFunctions);
 }
 
 /**

@@ -81,12 +81,7 @@ router.post('/v1/replace', async (req, res) => {
   try {
     let typeObj = await handler.getTypeById(type);
     let replacement = await handler.getOnePlace(typeObj, exclude);
-      // .then((replacement) => {
-        console.log(`ROUTE one`);
-        console.log(`Type: ${typeObj.name}`);
-        console.log(replacement);
-        res.send(replacement);
-      // });
+    res.send(replacement);
   } catch (e) {
     res.status(500).send('BAD REQUEST');
   }
