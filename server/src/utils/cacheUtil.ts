@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { Place } from "../interfaces/ItineraryInterface";
 import { createClient, RedisClientType, SchemaFieldTypes } from 'redis';
 import { RedisResultSet } from '../services/RedisCacheService';
-import { Z_ASCII } from 'zlib';
 
 /**
  * Store a place in cache using the google-provided placeId and the application
@@ -18,13 +17,8 @@ export async function storePlaceInCache(place: Partial<Place>, type: string): Pr
     .then((client: any) => {
       if (client != null) {
         // add the type;
-        console.log(`client type: ${typeof client}`);
         place['type'] = type;
         client.json.set(key, '$', place);
-        console.log(`ran json set`);
-        // Object.entries(place).map((v) => {
-        //   client.hSet.set(key, v[0], v[1]); // [string, any]
-        // });
       } else {
         console.log(`no client to add`);
       }
@@ -72,7 +66,13 @@ export async function getPlaceFromCacheById(placeId: string, type?: string): Pro
 
 export async function getRandomPlaceByTypeFromCache(type: string, max: number): Promise<RedisResultSet> {
   const client: RedisClientType = await getRedisClient();
-  const results: RedisResultSet = await client.ft.search('$:places', `@type:{${type.toLowerCase()}}`, { LIMIT: { from: 0, size: max } });
+  const results: RedisResultSet = await client.ft.search('$:places', `@type:{${type.toLowerCase()}}`, {
+    LIMIT: { from: 0, size: max },
+    SORTBY: {
+      BY: 'RAND()',
+      DIRECTION: 'ASC'
+    }
+   });
 
   return results;
 }

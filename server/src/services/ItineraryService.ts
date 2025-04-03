@@ -4,7 +4,7 @@ import { PlacesClient, protos } from '@googlemaps/places';
 import { ItineraryType, ItineraryInterface, Place as RedPlace, placeMapper } from '../interfaces/ItineraryInterface';
 import itineryTypes from "../static/data/itinerary";
 import { calculateCacheApiBias, calculateNumberOfPlaces, generateUuid } from '../utils/mathUtil';
-import { provinceCoordinatesMap } from '../constants';
+import { DEFAULT_PLACE_SEARCH_ATTEMPTS, provinceCoordinatesMap } from '../constants';
 import { createNearbySearchRequest } from '../utils/placeUtils';
 import { PlaceCacheHandlerInterface } from '../interfaces/handlers/PlaceCacheHandlerInterface';
 import { RedisCacheHandler } from '../handlers/RedisCacheHandler';
@@ -72,8 +72,8 @@ export class ItineraryService<T extends PlacesClient> implements ItineraryServic
     if (cachedPlaces.length == 0) {
       apiPlaces = numOfPlaces;
     } else if ((apiPlaces + cachedPlaces.length) < numOfPlaces) {
-      // If the cache returns less results the the number requested
-      // get the remainder from the api.
+      // If the cache returns less results than the number requested
+      // then get the remainder from the api.
       apiPlaces += numOfPlaces - (apiPlaces + cachedPlaces.length);
     }
 
@@ -110,26 +110,37 @@ export class ItineraryService<T extends PlacesClient> implements ItineraryServic
   }
 
   async getOnePlace(type: ItineraryType, exclude?: string[]): Promise<RedPlace[]> {
-    const retries = 0;
+    const retries = DEFAULT_PLACE_SEARCH_ATTEMPTS;
     let isSearching = true;
-    let generatedPlace: RedPlace[];
+    let generatedPlace: RedPlace[] = [];
     let searchAttempts = 0;
-    console.log(`getting on place`);
 
     try {
-      while (isSearching) {
+      while (isSearching && searchAttempts < retries) {
         searchAttempts++;
-        generatedPlace = await this.getPlacesFromGoogle({
-          type: type,
-          max: 1,
-        });
-        console.log(generatedPlace);
         // search redis first
+        generatedPlace = await this.getPlacesFromCache({ type, max: 1 });
 
-        if (searchAttempts >= retries || (Array.isArray(exclude) && exclude.length > 0 && exclude.find((placeId) => generatedPlace[0].id != placeId) == undefined)) {
+        if (generatedPlace.length > 0 && (!exclude || !exclude.includes(generatedPlace[0].id))) {
+          // Found a suitable place in the cache
           isSearching = false;
-          break;
+        } else {
+          // 2. Cache miss or place is excluded, try Google Places API
+          generatedPlace = await this.getPlacesFromGoogle({
+            type: type,
+            max: 1
+          });
+
+          // If we find a place from the API and it's not excluded, we're done
+          if (generatedPlace.length > 0 && (!exclude || !exclude.includes(generatedPlace[0].id))) {
+            isSearching = false;
+          }
         }
+      }
+      console.log(generatedPlace);
+      if (isSearching) {
+        // Couldn't find a suitable place after retries
+        console.log(`FAILED to get a suitable place after ${retries} attempts`);
       }
     } catch (e) {
       console.log(`FAILED to get one ${e}`);
