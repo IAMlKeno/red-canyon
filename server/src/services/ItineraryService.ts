@@ -55,6 +55,11 @@ export class ItineraryService<T extends PlacesClient> implements ItineraryServic
     return await this.getPlaceDetailsFromGoogle(id);
   }
 
+  /** TODO: this need to bias the fetching from the api and cache
+  // TODO: this needs to bias the results from places api. Plan to accomplish
+  this by altering the use of searchNearyby and searchByText, also update the 
+  Bias/scoring filter used
+  */
   async getAnItineraryByType(type: ItineraryType, ...additionalParams: any[]): Promise<ItineraryInterface> {
     // Destructure parameters.
     let { length, apiBias } = additionalParams[0];
