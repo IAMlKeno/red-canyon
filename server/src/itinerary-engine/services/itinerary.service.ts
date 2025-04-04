@@ -2,13 +2,13 @@ import 'dotenv/config';
 import { PlacesClient, protos } from '@googlemaps/places';
 
 import { ItineraryType, ItineraryInterface, Place as RedPlace, placeMapper } from '../interfaces/itinerary.interface';
-import { itineraryTypes, itineraryQueries } from "../../static/data/itinerary";
 import { calculateCacheApiBias, calculateNumberOfPlaces, generateUuid } from '../../utils/math.utils';
 import { DEFAULT_PLACE_SEARCH_ATTEMPTS, provinceCoordinatesMap } from '../../constants';
 import { createNearbySearchRequest, createSearchRequest, getRandomArrayEntry } from '../utils/itinerary.utils';
 import { ItineraryHandlerInterface } from '../interfaces/handlers/itinerary.handler.interface';
 import { RedisCacheHandler } from '../../itinerary-cache-engine/handlers/redis.handler';
 import { ItineraryServiceInterface } from '../interfaces/services/itinerary.service.interface';
+import { itineraryQueries, itineraryTypes } from '../static/data/itinerary';
 
 export class ItineraryService<T extends PlacesClient> implements ItineraryServiceInterface {
 

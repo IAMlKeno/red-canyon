@@ -1,11 +1,11 @@
+import { generateUuid } from "../../../utils/math.utils";
 import { ItineraryInterface } from "../../interfaces/itinerary.interface";
-import { generateUuid } from "../../utils/mathUtil";
-import itineryTypes from "./itinerary";
+import { itineraryTypes } from "./itinerary";
 
 const suggestions: ItineraryInterface[] = [
   {
     id: generateUuid(),
-    type: itineryTypes[0], //adventure
+    type: itineraryTypes[0], //adventure
     places: [
       {
         id: "ChIJC_3cdla3j4ARMgf4Pw8Irek",
@@ -443,7 +443,7 @@ const suggestions: ItineraryInterface[] = [
   },
   {
     id: generateUuid(),
-    type: itineryTypes[1], //action
+    type: itineraryTypes[1], //action
     places: [
       {
         id: "ChIJTzWDpDO3j4ARI08nSK_WLeU",
@@ -881,7 +881,7 @@ const suggestions: ItineraryInterface[] = [
   },
   {
     id: generateUuid(),
-    type: itineryTypes[2], //Foodie
+    type: itineraryTypes[2], //Foodie
     places: [
       {
         id: "ChIJTzWDpDO3j4ARI08nSK_WLeU",

@@ -2,14 +2,13 @@ import 'dotenv/config';
 import express from "express";
 import { ItineraryService } from "../itinerary-engine/services/itinerary.service";
 import { generateANumber } from "../utils/math.utils";
-import suggestions from "../static/data/suggestions";
 import { ItineraryInterface, ItineraryType } from "../itinerary-engine/interfaces/itinerary.interface";
-import { ItineraryHandler } from "../handlers/ItineraryHandler";
 import { GoogleAuth } from 'google-auth-library';
 import { PlacesClient } from '@googlemaps/places';
 import { ItineraryServiceInterface } from '../itinerary-engine/interfaces/services/itinerary.service.interface';
-import { mockedPlacesClient } from '../../tests/__mocks__/MockPlacesClient';
 import { RedisCacheHandler } from '../itinerary-cache-engine/handlers/redis.handler';
+import { ItineraryHandler } from '../itinerary-engine/handlers/itinerary.handler';
+import suggestions from '../itinerary-engine/static/data/suggestions';
 
 
 const router = express.Router();
@@ -118,9 +117,9 @@ router.post('/v1/test/cache', async (req, res) => {
 
 router.get('/v1/cache/list', async (req, res) => {
   // let obj = req.body.obj;
-  const cacheHandler: RedisCacheHandler = new RedisCacheHandler();
-  let r = await cacheHandler.listIndexes();
-  res.send(r);
+  // const cacheHandler: RedisCacheHandler = new RedisCacheHandler();
+  // let r = await cacheHandler.listIndexes();
+  res.status(500).send('NOT IMPLEMENTED');
 });
 
 export default router;
