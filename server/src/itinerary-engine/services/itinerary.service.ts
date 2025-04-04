@@ -64,11 +64,13 @@ export class ItineraryService<T extends PlacesClient> implements ItineraryServic
   async getAnItineraryByType(type: ItineraryType, ...additionalParams: any[]): Promise<ItineraryInterface> {
     // Destructure parameters.
     let { length, apiBias } = additionalParams[0];
+    let generatedPlaces: RedPlace[] = [];
 
     // attempt to get some places from cache first
     let numOfPlaces = calculateNumberOfPlaces(length);
     let { cachePlaces, apiPlaces } = calculateCacheApiBias(numOfPlaces, apiBias);
 
+    console.log(`total places to get: ${numOfPlaces}: from api: ${apiPlaces}, from cache ${cachePlaces}`);
     let cachedPlaces: RedPlace[] = await this.getPlacesFromCache({
       type: type,
       max: cachePlaces, // ensure that null or undefined isn't returned.
@@ -81,12 +83,16 @@ export class ItineraryService<T extends PlacesClient> implements ItineraryServic
       // If the cache returns less results than the number requested
       // then get the remainder from the api.
       apiPlaces += numOfPlaces - (apiPlaces + cachedPlaces.length);
+      generatedPlaces.push(...cachedPlaces);
     }
 
-    let generatedPlaces: RedPlace[] = await this.getPlacesFromGoogle({
+    console.log(`PLACES FROM CACHE: ${cachedPlaces.length}`);
+    let placesFromApi = await this.getPlacesFromGoogle({
       type: type,
       max: apiPlaces ?? numOfPlaces, // ensure that null or undefined isn't returned.
     });
+    generatedPlaces.push(...placesFromApi);
+    console.log(`ALL placess: ${generatedPlaces}`);
 
     const generatedItinerary: ItineraryInterface = {
       id: generateUuid(),
@@ -162,15 +168,18 @@ export class ItineraryService<T extends PlacesClient> implements ItineraryServic
     let { type, max } = params;
 
     try {
-      if (this.useApiTextSearch()) {
+      // if (this.useApiTextSearch()) {
         const query: string = `${getRandomArrayEntry(itineraryQueries[type.name.toLowerCase()])} ${this.province}`;
+        console.log(`QUERY: ${query}`);
         const key: string = getRandomArrayEntry(type.keys);
+        console.log(`KEY TO USE ${key}`);
         const request = createSearchRequest(key, query, max, this.locationRestriction);
         fetchedPlaces = await this.placeClient.searchText(request, this.getApiHeader());
-      } else {
-        const request = createNearbySearchRequest(type.keys, this.locationRestriction, max);
-        fetchedPlaces = await this.placeClient.searchNearby(request, this.getApiHeader());
-      }
+        console.log(`FETCHED PLACES ${fetchedPlaces}`);
+      // } else {
+        // const request = createNearbySearchRequest(type.keys, this.locationRestriction, max);
+        // fetchedPlaces = await this.placeClient.searchNearby(request, this.getApiHeader());
+      // }
 
       if (Object.keys(fetchedPlaces[0]).length > 0) {
         generatedPlaces = fetchedPlaces[0]

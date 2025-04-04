@@ -118,8 +118,8 @@ router.post('/v1/test/cache', async (req, res) => {
 router.get('/v1/cache/list', async (req, res) => {
   // let obj = req.body.obj;
   // const cacheHandler: RedisCacheHandler = new RedisCacheHandler();
-  // let r = await cacheHandler.listIndexes();
-  res.status(500).send('NOT IMPLEMENTED');
+  // let r = await cacheHandler.listIndexes();/
+  res.status(500).send('NOT IMPLEMENTEDD');
 });
 
 export default router;

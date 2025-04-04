@@ -19,6 +19,7 @@ export function createSearchRequest(
   lang: string | null = null,
   region: string | null = null
 ): protos.google.maps.places.v1.ISearchTextRequest {
+  const randomRank = getRandomGoogleRankPreference();
   const req: protos.google.maps.places.v1.ISearchTextRequest = {
     textQuery: text,
     includedType: type,
@@ -27,6 +28,7 @@ export function createSearchRequest(
     maxResultCount: max ?? DEFAULT_PLACES_PER_DAY,
     regionCode: region ?? DEFAULT_REGION,
     strictTypeFiltering: false,
+    rankPreference: randomRank,
   };
 
   return req;
