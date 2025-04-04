@@ -1,4 +1,4 @@
-import { ItineraryInterface } from "../../interfaces/ItineraryInterface";
+import { ItineraryInterface } from "../../interfaces/itinerary.interface";
 import { generateUuid } from "../../utils/mathUtil";
 import itineryTypes from "./itinerary";
 

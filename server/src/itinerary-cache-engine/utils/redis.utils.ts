@@ -1,7 +1,7 @@
 import 'dotenv/config';
-import { Place } from "../interfaces/ItineraryInterface";
+import { Place } from "../../itinerary-engine/interfaces/itinerary.interface";
 import { createClient, RedisClientType, SchemaFieldTypes } from 'redis';
-import { RedisResultSet } from '../types/cache-types';
+import { RedisResultSet } from '../types/cache.types';
 
 /**
  * Store a place in cache using the google-provided placeId and the application
@@ -118,11 +118,11 @@ async function getRedisClient(): Promise<any | null> {
   const retries = 3;
   let attempt = 1;
   let client = undefined;
+  const redisUrl = process.env['NODE_REDIS'];
   while (attempt <= 3 || client == undefined) {
     try {
       attempt++;
-      console.log(`attempting to connect to redis using url ${process.env['NODE_REDIS']}`);
-      client = createClient({ url: process.env['NODE_REDIS'] });
+      client = createClient({ url: redisUrl });
       await client.connect();
 
       createPlaceIndex(client);
@@ -137,9 +137,6 @@ async function getRedisClient(): Promise<any | null> {
   }
 }
 
-export async function listIndexesH(): Promise<Array<string>> {
-  return await listIndexes(await getRedisClient());
-}
 export async function listIndexes(client: any): Promise<Array<string>> {
   return await client.ft._LIST();
 }

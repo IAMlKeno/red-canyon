@@ -1,6 +1,6 @@
-import { Place } from "../ItineraryInterface";
+import { Place } from "../itinerary.interface";
 
-export interface PlaceCacheHandlerInterface {
+export interface ItineraryHandlerInterface {
   getAPlace(placeId?: string, type?: string): Promise<Place|undefined>;
   getPlaces(type: string, max: number): Promise<Place[]|undefined>;
   addAPlace(place: Place, type: string): Promise<boolean>;

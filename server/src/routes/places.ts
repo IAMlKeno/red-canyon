@@ -1,15 +1,15 @@
 import 'dotenv/config';
 import express from "express";
-import { ItineraryService } from "../services/ItineraryService";
-import { generateANumber } from "../utils/mathUtil";
+import { ItineraryService } from "../itinerary-engine/services/itinerary.service";
+import { generateANumber } from "../utils/math.utils";
 import suggestions from "../static/data/suggestions";
-import { ItineraryInterface, ItineraryType } from "../interfaces/ItineraryInterface";
+import { ItineraryInterface, ItineraryType } from "../itinerary-engine/interfaces/itinerary.interface";
 import { ItineraryHandler } from "../handlers/ItineraryHandler";
 import { GoogleAuth } from 'google-auth-library';
 import { PlacesClient } from '@googlemaps/places';
-import { ItineraryServiceInterface } from '../interfaces/services/ItineraryServiceInterface';
+import { ItineraryServiceInterface } from '../itinerary-engine/interfaces/services/itinerary.service.interface';
 import { mockedPlacesClient } from '../../tests/__mocks__/MockPlacesClient';
-import { RedisCacheHandler } from '../handlers/RedisCacheHandler';
+import { RedisCacheHandler } from '../itinerary-cache-engine/handlers/redis.handler';
 
 
 const router = express.Router();

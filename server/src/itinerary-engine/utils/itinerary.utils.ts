@@ -1,5 +1,5 @@
 import { protos } from "@googlemaps/places";
-import { DEFAULT_LANG, DEFAULT_PLACES_PER_DAY, DEFAULT_REGION } from "../constants";
+import { DEFAULT_LANG, DEFAULT_PLACES_PER_DAY, DEFAULT_REGION } from "../../constants";
 
 /**
  * Creates a request object for the searchText API method.

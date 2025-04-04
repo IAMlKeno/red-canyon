@@ -1,4 +1,4 @@
-import { ItineraryType, ItineraryInterface, Place } from "../ItineraryInterface";
+import { ItineraryType, ItineraryInterface, Place } from "../itinerary.interface";
 
 export interface ItineraryServiceInterface {
 

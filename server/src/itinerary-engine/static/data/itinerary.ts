@@ -1,4 +1,4 @@
-import { ItineraryType } from "../../interfaces/ItineraryInterface";
+import { ItineraryType } from "../../interfaces/itinerary.interface";
 
 export const itineraryTypes: ItineraryType[] = [
   {

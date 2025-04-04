@@ -1,5 +1,5 @@
-import { ItineraryInterface, ItineraryType, Place } from "../interfaces/ItineraryInterface";
-import { ItineraryServiceInterface } from "../interfaces/services/ItineraryServiceInterface";
+import { ItineraryInterface, ItineraryType, Place } from "../interfaces/itinerary.interface";
+import { ItineraryServiceInterface } from "../interfaces/services/itinerary.service.interface";
 
 export class ItineraryHandler<T extends ItineraryServiceInterface> {
 

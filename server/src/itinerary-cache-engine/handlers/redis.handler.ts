@@ -1,14 +1,12 @@
-import { PlaceCacheHandlerInterface } from "../interfaces/handlers/PlaceCacheHandlerInterface";
-import { Place } from "../interfaces/ItineraryInterface";
+import { ItineraryHandlerInterface } from "../../itinerary-engine/interfaces/handlers/itinerary.handler.interface";
+import { Place } from "../../itinerary-engine/interfaces/itinerary.interface";
 import {
   existsInCache,
   getPlaceFromCacheById,
   getRandomPlaceByTypeFromCache,
-  listIndexes,
-  listIndexesH,
-  storePlaceInCache } from "../utils/cacheUtil";
+  storePlaceInCache } from "../utils/redis.utils";
 
-export class RedisCacheHandler implements PlaceCacheHandlerInterface {
+export class RedisCacheHandler implements ItineraryHandlerInterface {
   async getAPlace(placeId?: string, type?: string): Promise<Place|undefined> {
     if (placeId) {
       // Get a place by id. An undefined type is handled.
@@ -63,6 +61,4 @@ export class RedisCacheHandler implements PlaceCacheHandlerInterface {
   async searchPlaces(query: string): Promise<{ totalResults: number, results: Array<Place> }> {
     throw new Error('not implemented');
   }
-
-  async listIndexes() { return await listIndexesH(); }
 }
