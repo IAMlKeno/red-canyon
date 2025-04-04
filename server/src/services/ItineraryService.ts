@@ -2,10 +2,10 @@ import 'dotenv/config';
 import { PlacesClient, protos } from '@googlemaps/places';
 
 import { ItineraryType, ItineraryInterface, Place as RedPlace, placeMapper } from '../interfaces/ItineraryInterface';
-import itineryTypes from "../static/data/itinerary";
+import { itineraryTypes, itineraryQueries } from "../static/data/itinerary";
 import { calculateCacheApiBias, calculateNumberOfPlaces, generateUuid } from '../utils/mathUtil';
 import { DEFAULT_PLACE_SEARCH_ATTEMPTS, provinceCoordinatesMap } from '../constants';
-import { createNearbySearchRequest } from '../utils/placeUtils';
+import { createNearbySearchRequest, createSearchRequest, getRandomArrayEntry } from '../utils/placeUtils';
 import { PlaceCacheHandlerInterface } from '../interfaces/handlers/PlaceCacheHandlerInterface';
 import { RedisCacheHandler } from '../handlers/RedisCacheHandler';
 import { ItineraryServiceInterface } from '../interfaces/services/ItineraryServiceInterface';
@@ -14,6 +14,7 @@ export class ItineraryService<T extends PlacesClient> implements ItineraryServic
 
   private itineraryTypes: ItineraryType[];
   private locationRestriction: protos.google.maps.places.v1.SearchNearbyRequest.ILocationRestriction;
+  protected province: string;
 
   public defaultFieldsUpdated: Array<string> = [
     'places.id',
@@ -28,16 +29,16 @@ export class ItineraryService<T extends PlacesClient> implements ItineraryServic
   private cacheService: PlaceCacheHandlerInterface;
 
   constructor(private placeClient: T) {
-    this.itineraryTypes = itineryTypes;
+    this.itineraryTypes = itineraryTypes;
 
-    const province = process.env['INTINERARY_LOCATION'];
+    this.province = process.env['INTINERARY_LOCATION'];
     this.locationRestriction = {
       circle: {
         center: protos.google.type.LatLng.create({
-          latitude: provinceCoordinatesMap.get(province).lat,
-          longitude: provinceCoordinatesMap.get(province).lng,
+          latitude: provinceCoordinatesMap.get(this.province).lat,
+          longitude: provinceCoordinatesMap.get(this.province).lng,
         }),
-        radius: provinceCoordinatesMap.get(province).radius,
+        radius: provinceCoordinatesMap.get(this.province).radius,
       }
     };
     this.cacheService = new RedisCacheHandler();
@@ -157,20 +158,29 @@ export class ItineraryService<T extends PlacesClient> implements ItineraryServic
 
   async getPlacesFromGoogle(params: { type: ItineraryType, max: number}): Promise<RedPlace[]> {
     let generatedPlaces: RedPlace[] = [];
+    let fetchedPlaces = [];
     let { type, max } = params;
 
     try {
-      const request = createNearbySearchRequest(type.keys, this.locationRestriction, max);
-      const fetchedPlaces = await this.placeClient.searchNearby(request, this.getApiHeader());
+      if (this.useApiTextSearch()) {
+        const query: string = `${getRandomArrayEntry(itineraryQueries[type.name.toLowerCase()])} ${this.province}`;
+        const key: string = getRandomArrayEntry(type.keys);
+        const request = createSearchRequest(key, query, max, this.locationRestriction);
+        fetchedPlaces = await this.placeClient.searchText(request, this.getApiHeader());
+      } else {
+        const request = createNearbySearchRequest(type.keys, this.locationRestriction, max);
+        fetchedPlaces = await this.placeClient.searchNearby(request, this.getApiHeader());
+      }
 
       if (Object.keys(fetchedPlaces[0]).length > 0) {
         generatedPlaces = fetchedPlaces[0]
             .places
-            .map((googlePlace) => {
+            .map((googlePlace: any) => {
               let place = placeMapper(googlePlace);
-              // cache the place
               return place;
             });
+
+        // Cache the places.
         this.cachePlaces(generatedPlaces, type.name);
       } else {
         throw Error('Not a usable response from google');
@@ -216,5 +226,9 @@ export class ItineraryService<T extends PlacesClient> implements ItineraryServic
   private async cachePlaces(places: RedPlace[], type: string) {
     if (!places || places.length <= 0) return;
     places.forEach((place) => this.cacheService.addAPlace(place, type));
+  }
+
+  private useApiTextSearch(): boolean {
+    return Math.random() < 0.5;
   }
 }

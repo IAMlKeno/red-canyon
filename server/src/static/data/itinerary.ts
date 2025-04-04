@@ -1,6 +1,6 @@
 import { ItineraryType } from "../../interfaces/ItineraryInterface";
 
-const itineryTypes: ItineraryType[] = [
+export const itineraryTypes: ItineraryType[] = [
   {
     id: "1",
     keys: ["tourist_attraction", "art_gallery", "aquarium", "museum", "spa"],
@@ -31,6 +31,30 @@ const itineryTypes: ItineraryType[] = [
     expectedDuration: {
       hours: 2,
     }
-  }];
+  }
+];
 
-export default itineryTypes;
+/**
+ * This is a mapped record of string queries to be used
+ * for the Places API searchByText. They are expected to be combined
+ * with the province the app is used for.
+ */
+export const itineraryQueries: Record<string, Array<string>> = {
+  foodie: [
+    'best restaurant in',
+    'best cafe in',
+    'best seafood restaurant in',
+    'best restaurant in',
+  ],
+  action: [
+    'best biking trail in',
+    'best biking tours in',
+  ],
+  adventure: [
+    'best tours in',
+    'best walking tours in',
+    'best cycling tours in',
+    'best biking tours in',
+    'water parks in',
+  ]
+}

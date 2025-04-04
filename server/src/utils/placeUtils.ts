@@ -15,16 +15,17 @@ export function createSearchRequest(
   type: string,
   text: string,
   max: number | undefined = undefined,
+  locationBias: protos.google.maps.places.v1.SearchTextRequest.ILocationBias,
   lang: string | null = null,
   region: string | null = null
 ): protos.google.maps.places.v1.ISearchTextRequest {
   const req: protos.google.maps.places.v1.ISearchTextRequest = {
     textQuery: text,
     includedType: type,
-    locationBias: this.locationBias,
-    languageCode: lang ?? this.defaultLangPref,
-    maxResultCount: max ?? this.placesPerDay,
-    regionCode: region ?? this.defaultRegion,
+    locationBias: locationBias,
+    languageCode: lang ?? DEFAULT_LANG,
+    maxResultCount: max ?? DEFAULT_PLACES_PER_DAY,
+    regionCode: region ?? DEFAULT_REGION,
     strictTypeFiltering: false,
   };
 
@@ -48,13 +49,26 @@ export function createNearbySearchRequest(
   lang: string | null = null,
   region: string | null = null
 ): protos.google.maps.places.v1.ISearchNearbyRequest {
+  const randomRank = getRandomGoogleRankPreference();
   const req: protos.google.maps.places.v1.ISearchNearbyRequest = {
     includedTypes: type,
     locationRestriction: locationRestriction,
     languageCode: lang ?? DEFAULT_LANG,
     maxResultCount: max ?? DEFAULT_PLACES_PER_DAY,
     regionCode: region ?? DEFAULT_REGION,
+    rankPreference: randomRank ?? protos.google.maps.places.v1.SearchNearbyRequest.RankPreference[0],
   };
 
   return req;
+}
+
+export function getRandomGoogleRankPreference(): any {
+  const ranks = Object.values(protos.google.maps.places.v1.SearchNearbyRequest.RankPreference);
+  const r = Math.random() * ranks.length;
+  return protos.google.maps.places.v1.SearchNearbyRequest.RankPreference[r];
+}
+
+export function getRandomArrayEntry(queries: string[]): string {
+  const randomIndex = Math.floor(Math.random() * queries.length);
+  return queries[randomIndex];
 }
