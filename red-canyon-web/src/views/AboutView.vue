@@ -1,9 +1,8 @@
 <template>
   <div class="about">
     <h1>About</h1>
-    <p>
-      <h4>Welcome to your personal travel companion!</h4>
-    </p>
+
+    <h4>Welcome to your personal travel companion!</h4>
 
     <p>
       Our itinerary planner is designed to make exploring new places easy, exciting, and stress-free. Whether you're planning a day trip, a weekend getaway, or a full vacation, our tool helps you discover hidden gems, must-see attractions, and local favorites — all customized to your interests.
