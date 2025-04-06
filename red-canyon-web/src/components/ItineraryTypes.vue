@@ -47,7 +47,10 @@ function handleBtnClick(id: string, event: any): void {
 
   itineraryEngineInitiated.value = true;
   isSuggestionLoading.value = true;
+  handleSuggestionFetch();
+}
 
+function handleSuggestionFetch() {
   Promise.all([
     handleFetchSuggestion(),
     handleUpdateAdvertisementTitle(),
@@ -147,7 +150,7 @@ const handleSubmitUserInfo = (event: any) => {
       <ErrorLoading>Uh oh! 😨 There was an error loading the suggestion.</ErrorLoading>
     </div>
     <div v-else>
-      <Suggestion />
+      <Suggestion :handle-get-new-suggestion="handleSuggestionFetch" />
     </div>
   </div>
 </template>

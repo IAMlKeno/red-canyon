@@ -12,6 +12,9 @@ let lengthOfTrip = userStore.lengthOfTrip;
 let placesPerDay = 2;
 const suggestion = ref<ItineraryInterface|null>(null);
 const dividedPlaces = ref<Partial<PlaceType>[][]>([]);
+const props = defineProps<{
+  handleGetNewSuggestion: Function;
+}>();
 
 onMounted(() => {
   suggestion.value = userStore.currentItinerary;
@@ -39,6 +42,8 @@ function handleGetNewItinerary() {
   const msg: string = 'Are you sure that you want to get a new suggested Itinerary? The current one will be lost';
   if (suggestion.value != null && confirmAction(msg)) {
     alert(`Call get new itinerary for type (${suggestion.value.type.name})`);
+    // fetch new itinerary...
+    props?.handleGetNewSuggestion();
   }
 }
 
