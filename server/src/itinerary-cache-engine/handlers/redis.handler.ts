@@ -1,5 +1,5 @@
 import { ItineraryHandlerInterface } from "../../itinerary-engine/interfaces/handlers/itinerary.handler.interface";
-import { Place } from "../../itinerary-engine/interfaces/itinerary.interface";
+import { ItineraryType, Place } from "../../itinerary-engine/interfaces/itinerary.interface";
 import {
   existsInCache,
   getPlaceFromCacheById,
@@ -30,13 +30,13 @@ export class RedisCacheHandler implements ItineraryHandlerInterface {
     }
   }
 
-  async getPlaces(type: string, max: number): Promise<Place[] | undefined> {
+  async getPlaces(type: ItineraryType, max: number): Promise<Place[] | undefined> {
     let places: Place[] = [];
     try {
-      let results = await getRandomPlaceByTypeFromCache(type, max);
+      let results = await getRandomPlaceByTypeFromCache(type.name, max);
       places = results.documents.map((place: any) => place.value as Place);
     } catch(e) {
-      console.log(`Error searching places`);
+      console.log(`Error searching places: \n${e}`);
     } finally {
       return places;
     }

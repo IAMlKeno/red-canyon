@@ -169,13 +169,16 @@ export class ItineraryService<T extends PlacesClient> implements ItineraryServic
 
     try {
       if (this.useApiTextSearch()) {
-        const key: string = getRandomArrayEntry(type.keys);
-        const query: string = `${getRandomArrayEntry(itineraryQueries[type.name.toLowerCase()][key])} ${this.province}`;
-        const request = createSearchRequest(key, query, max, this.locationRestriction);
-        fetchedPlaces = await this.placeClient.searchText(request, this.getApiHeader());
+        let key: string | undefined;
+        let query: string | undefined;
+        ({ key, query, fetchedPlaces } = await this.useTextSearch(type, max, fetchedPlaces));
+        if (fetchedPlaces.length == 0) {
+          console.log(`got no places using query and key: ${key}: ${query}`);
+          console.log(`using nearby search`);
+          fetchedPlaces = await this.useNearbySearch(type, max, fetchedPlaces);
+        }
       } else {
-        const request = createNearbySearchRequest(type.keys, this.locationRestriction, max);
-        fetchedPlaces = await this.placeClient.searchNearby(request, this.getApiHeader());
+        fetchedPlaces = await this.useNearbySearch(type, max, fetchedPlaces);
       }
 
       if (Object.keys(fetchedPlaces[0]).length > 0) {
@@ -198,6 +201,20 @@ export class ItineraryService<T extends PlacesClient> implements ItineraryServic
     } finally {
       return generatedPlaces;
     }
+  }
+
+  private async useTextSearch(type: ItineraryType, max: number, fetchedPlaces: any[]) {
+    const key: string = getRandomArrayEntry(type.keys);
+    const query: string = `${getRandomArrayEntry(itineraryQueries[type.name.toLowerCase()][key])} ${this.province}`;
+    const request = createSearchRequest(key, query, max, this.locationRestriction);
+    fetchedPlaces = await this.placeClient.searchText(request, this.getApiHeader());
+    return { key, query, fetchedPlaces };
+  }
+
+  private async useNearbySearch(type: ItineraryType, max: number, fetchedPlaces: any[]) {
+    const request = createNearbySearchRequest(type.keys, this.locationRestriction, max);
+    fetchedPlaces = await this.placeClient.searchNearby(request, this.getApiHeader());
+    return fetchedPlaces;
   }
 
   private async getPlacesFromCache(params: any): Promise<RedPlace[]> {

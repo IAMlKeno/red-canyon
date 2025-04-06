@@ -62,12 +62,13 @@ export async function getPlaceFromCacheById(placeId: string, type?: string): Pro
 
 export async function getRandomPlaceByTypeFromCache(type: string, max: number): Promise<RedisResultSet> {
   const client: RedisClientType = await getRedisClient();
-  const results: RedisResultSet = await client.ft.search('$:places', `@type:{${type.toLowerCase()}}`, {
+  // const results: RedisResultSet = await client.ft.search(`places:${type.toLowerCase()}`, `@type:{${type.toLowerCase()}}`, {
+  const results: RedisResultSet = await client.ft.search(`places:${type.toLowerCase()}`, ``, {
     LIMIT: { from: 0, size: max },
-    SORTBY: {
-      BY: 'RAND()',
-      DIRECTION: 'ASC'
-    }
+    // SORTBY: {
+    //   BY: 'RAND()',
+    //   DIRECTION: 'ASC'
+    // }
    });
 
   return results;
@@ -81,7 +82,7 @@ export async function getRandomPlaceByTypeFromCache(type: string, max: number): 
  */
 async function searchCacheById(placeId: string): Promise<any[]> {
   const client: RedisClientType = await getRedisClient();
-  const results = await client.ft.search('$:places', `@placeId:{${placeId}}`);
+  const results = await client.ft.search(`places:`, `@placeId:{${placeId}}`);
 
   return (results.total > 0) ? results.documents : [];
 }
