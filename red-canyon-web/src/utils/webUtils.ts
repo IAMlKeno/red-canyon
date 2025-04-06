@@ -1,4 +1,4 @@
-import { placesPerDay } from "@/constants";
+import { PLACES_PER_DAY } from "@/constants";
 import type { Place } from "@/models/ItineraryInterface";
 
 export function confirmAction(msg: string): boolean {
@@ -13,8 +13,8 @@ export function getUserFriendlyDate(date: Date): string {
 
 export function dividePlaces(places: Partial<Place>[]): Partial<Place>[][] {
   const results = [];
-  for (let i = 0; i < places.length; i += placesPerDay) {
-    results.push(places.slice(i, i + placesPerDay));
+  for (let i = 0; i < places.length; i += PLACES_PER_DAY) {
+    results.push(places.slice(i, i + PLACES_PER_DAY));
   }
 
   return results;

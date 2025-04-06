@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import type { ItineraryInterface, Place as PlaceType } from '@/models/ItineraryInterface';
+import type { ItineraryInterface, Place as RedPlace, Place as PlaceType } from '@/models/ItineraryInterface';
 
 import Place from './Place.vue';
-import { itSuggestionHeading } from '../../constants';
+import { itSuggestionHeading, PLACES_PER_DAY } from '../../constants';
 import { confirmAction } from '../../utils/webUtils';
 import { userStore } from '@/userStore';
 import { createPdf } from '@/utils/pdfUtils';
+import { replaceOne } from '@/utils/api';
 
 let lengthOfTrip = userStore.lengthOfTrip;
-let placesPerDay = 2;
 const suggestion = ref<ItineraryInterface|null>(null);
 const dividedPlaces = ref<Partial<PlaceType>[][]>([]);
 const props = defineProps<{
@@ -18,14 +18,14 @@ const props = defineProps<{
 
 onMounted(() => {
   suggestion.value = userStore.currentItinerary;
-  dividePlaces(suggestion.value.places, placesPerDay);
+  dividePlaces(suggestion.value.places, PLACES_PER_DAY);
 });
 
 watch(
   () => userStore.currentItinerary,
   (oldValue, newValue) => {
     suggestion.value = newValue;
-    dividePlaces(suggestion.value.places, placesPerDay);
+    dividePlaces(suggestion.value.places, PLACES_PER_DAY);
   },
   { deep: true }
 )
@@ -51,6 +51,24 @@ function handleDownloadItinerary() {
   alert('Thank you for using this Planner. Please enjoy your trip. Your itinerary will download shortly.');
   var docDefinition = { content: 'This is an sample PDF printed with pdfMake' };
   createPdf(docDefinition.content);
+}
+
+function handleReplaceOnePlace(place: RedPlace) {
+  if (confirmAction(`Are you sure you want to replace "${place.name}"?`)) {
+    const oldId = place.id;
+    replaceOne(place.id ?? '')
+      .then((res) => {
+        const updatedPlaces = userStore.currentItinerary.places.map(place => place.id == oldId
+            ? Array.isArray(res.data) ? res.data[0] : res.data
+            : place);
+        userStore.currentItinerary.places = [...updatedPlaces];
+        dividePlaces(updatedPlaces, PLACES_PER_DAY);
+      })
+      .catch((e) => {
+        console.log(`THERE WAS AN ERROR REPLACING THE SUGGESTION ${e}`);
+        alert(`THERE WAS AN ERROR REPLACING THE SUGGESTION`);
+      });
+  }
 }
 </script>
 
@@ -110,7 +128,7 @@ function handleDownloadItinerary() {
               class="tab-pane fade show"
               role="tabpanel">
             <div v-for="place in places" class="description">
-              <Place :place="place" />
+              <Place :place="place" :handle-get-one-new-suggestion="handleReplaceOnePlace" />
             </div>
           </div>
 

@@ -1,26 +1,13 @@
 <script lang="ts" setup>
 import type { Place } from '@/models/ItineraryInterface';
-import { confirmAction } from '../../utils/webUtils';
-import { replaceOne } from '@/utils/api';
-import { userStore } from '@/userStore';
 
 const props = defineProps<{
   place: Partial<Place>;
+  handleGetOneNewSuggestion: Function;
 }>();
 
 function handleGetOneNewSuggestion() {
-  if (confirmAction(`Are you sure you want to replace "${props.place.name}"?`)) {
-    const oldId = props.place.id;
-    replaceOne(props.place.id ?? '')
-      .then((res) => {
-        const updatedPlaces = userStore.currentItinerary.places.map(place => place.id == oldId ? res.data[0] : place);
-        userStore.currentItinerary.places = updatedPlaces;
-      })
-      .catch((e) => {
-        console.log(`THERE WAS AN ERROR REPLACING THE SUGGESTION ${e}`);
-        alert(`THERE WAS AN ERROR REPLACING THE SUGGESTION`);
-      });
-  }
+  props.handleGetOneNewSuggestion(props.place);
 }
 
 function handleMakeReservation() {
