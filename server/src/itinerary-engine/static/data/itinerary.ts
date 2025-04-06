@@ -39,22 +39,50 @@ export const itineraryTypes: ItineraryType[] = [
  * for the Places API searchByText. They are expected to be combined
  * with the province the app is used for.
  */
-export const itineraryQueries: Record<string, Array<string>> = {
-  foodie: [
-    'best restaurant in',
-    'best cafe in',
-    'best seafood restaurant in',
-    'best restaurant in',
-  ],
-  action: [
+export const itineraryQueries: Record<string, any> = {
+  adventure: {
+    tourist_attraction: [
+      'best tours in',
+      'best walking tours in',
+      'best cycling tours in',
+      'best biking tours in',
+    ],
+    art_gallery: [
+      'art gallaries in'
+    ],
+    aquarium: [
+      'aquariums in'
+    ],
+    museum: [
+      'best museums in'
+    ],
+    spa: [
+      'spas in',
+      'best massage in',
+      'water parks in',
+    ],
+  },
+  foodie: {
+    restaurant: [
+      'best restaurant in',
+      'best seafood restaurant in',
+      'best restaurant in',
+    ],
+    cafe: [
+      'best cafe in',
+    ],
+  },
+  action: {
+    amusement_park: [
+      'amusement parks in',
+      'festivals in',
     'best biking trail in',
     'best biking tours in',
-  ],
-  adventure: [
-    'best tours in',
-    'best walking tours in',
-    'best cycling tours in',
-    'best biking tours in',
-    'water parks in',
-  ]
+    ],
+    campground: [],
+    night_club: [
+      'night life in',
+      'dance clubs in',
+    ],
+  },
 }

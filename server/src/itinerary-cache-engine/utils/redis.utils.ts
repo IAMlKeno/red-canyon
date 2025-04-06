@@ -46,19 +46,16 @@ export async function getPlaceFromCacheById(placeId: string, type?: string): Pro
 
   try {
     if (type == undefined) {
-      console.log(`cache fetch with placeid ${placeId}`);
       // search using just the placeId
       const result = await searchCacheById(placeId);
       redisHit = result.length > 0 ? result[0] : undefined;
     } else {
       const key = makeRedisKey(placeId, type);
-      console.log(`cache fetch with key ${key}`);
       redisHit = (await getFromCache(key)) as Place;
     }
   } catch (e) {
     console.log(`CACHE MISS FOR PLACE ${placeId}`);
   } finally {
-    console.log(`redis hit: ${redisHit}`);
     return redisHit ?? undefined;
   }
 }
@@ -129,7 +126,7 @@ async function getRedisClient(): Promise<any | null> {
 
       return client;
     } catch(e) {
-      console.log(`something fauled with redis setup ${e}`);
+      console.log(`something failed with redis setup ${e}`);
       if (attempt == retries) {
         return null;
       }
@@ -154,7 +151,6 @@ export async function listIndexes(client: any): Promise<Array<string>> {
  * @param client The redis client
  */
 async function createPlaceIndex(client: any): Promise<void> {
-  console.log(`attempting to create indexes`);
 
   const indexes: Array<string> = await listIndexes(client);
   ['Foodie', 'Action', 'Adventure']
@@ -179,31 +175,6 @@ async function createPlaceIndex(client: any): Promise<void> {
         console.log(`FAILED TO CREATE INDEX: ${indexStr}: ${e}`);
       }
     });
-  // const createIndexFunctions = ['Foodie', 'Action', 'Adventure']
-  //   .map((uCType) => {
-  //     const type = uCType.toLowerCase();
-  //     let indexStr = `places:${type}`;
-  //     return async () => {
-  //       try {
-  //         // if (indexes.includes(indexStr)) {
-  //           console.log(`Index: ${indexStr} doesnt exist, creating it`);
-  //           client.ft.create(indexStr, {
-  //             id: SchemaFieldTypes.TEXT,
-  //             name: SchemaFieldTypes.TEXT,
-  //             type: SchemaFieldTypes.TEXT,
-  //           }, {
-  //             ON: 'JSON',
-  //             PREFIX: `places:${type}:`
-  //           })
-  //         // } else {
-  //         //   console.log(`Index: ${indexStr} exist, nothing to do`);
-  //         // }
-  //       } catch(e) {
-  //         console.log(`FAILED TO CREATE INDEX: ${indexStr}: ${e}`);
-  //       }
-  //     }
-  //   });
-  // Promise.all(createIndexFunctions);
 }
 
 /**

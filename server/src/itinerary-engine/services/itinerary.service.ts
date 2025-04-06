@@ -168,18 +168,15 @@ export class ItineraryService<T extends PlacesClient> implements ItineraryServic
     let { type, max } = params;
 
     try {
-      // if (this.useApiTextSearch()) {
-        const query: string = `${getRandomArrayEntry(itineraryQueries[type.name.toLowerCase()])} ${this.province}`;
-        console.log(`QUERY: ${query}`);
+      if (this.useApiTextSearch()) {
         const key: string = getRandomArrayEntry(type.keys);
-        console.log(`KEY TO USE ${key}`);
+        const query: string = `${getRandomArrayEntry(itineraryQueries[type.name.toLowerCase()][key])} ${this.province}`;
         const request = createSearchRequest(key, query, max, this.locationRestriction);
         fetchedPlaces = await this.placeClient.searchText(request, this.getApiHeader());
-        console.log(`FETCHED PLACES ${fetchedPlaces}`);
-      // } else {
-        // const request = createNearbySearchRequest(type.keys, this.locationRestriction, max);
-        // fetchedPlaces = await this.placeClient.searchNearby(request, this.getApiHeader());
-      // }
+      } else {
+        const request = createNearbySearchRequest(type.keys, this.locationRestriction, max);
+        fetchedPlaces = await this.placeClient.searchNearby(request, this.getApiHeader());
+      }
 
       if (Object.keys(fetchedPlaces[0]).length > 0) {
         generatedPlaces = fetchedPlaces[0]
