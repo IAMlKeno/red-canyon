@@ -16,6 +16,11 @@ export default defineConfig({
     },
   },
   server: {
-    host: '0.0.0.0'
+    host: '0.0.0.0',
+    allowedHosts: [
+      'red-canyon-server-162131761219.northamerica-northeast1.run.app',
+      '.northamerica-northeast1.run.app'
+    ],
+    cors: true,
   }
 })
