@@ -6,6 +6,7 @@ import Place from './Place.vue';
 import { itSuggestionHeading, PLACES_PER_DAY } from '../../constants';
 import { confirmAction } from '../../utils/webUtils';
 import { userStore } from '@/userStore';
+// import { pdfMaker } from '@/utils/pdfUtils';
 import { createPdf } from '@/utils/pdfUtils';
 import { replaceOne } from '@/utils/api';
 
@@ -49,7 +50,8 @@ function handleGetNewItinerary() {
 
 function handleDownloadItinerary() {
   alert('Thank you for using this Planner. Please enjoy your trip. Your itinerary will download shortly.');
-  var docDefinition = { content: 'This is an sample PDF printed with pdfMake' };
+  let docDefinition = { content: 'This is an sample PDF printed with pdfMake' };
+  // pdfMaker(docDefinition.content);
   createPdf(docDefinition.content);
 }
 

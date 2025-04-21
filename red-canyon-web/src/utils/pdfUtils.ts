@@ -1,3 +1,4 @@
+// import { createPdf } from 'pdfmake/build/pdfmake';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import type { TDocumentDefinitions } from 'pdfmake/interfaces';
@@ -7,16 +8,17 @@ import type { Place } from '@/models/ItineraryInterface';
 import { dividePlaces, getUserFriendlyDate } from './webUtils';
 
 (pdfMake as any).vfs = pdfFonts.vfs;
-
+// export const pdfMaker = (text: string): Promise<void> => {
 export const createPdf = (text: string): Promise<void> => {
   const docDefinition = buildPdfDoc() as TDocumentDefinitions;
 
+  // const pdfDocGenerator = createPdf(docDefinition);
   const pdfDocGenerator = pdfMake.createPdf(docDefinition);
 
   return new Promise((resolve, reject) => {
     // These are examples, you can choose your preferred download method
-    // pdfDocGenerator.download('generated.pdf'); 
-    pdfDocGenerator.open(); // Opens in a new tab
+    pdfDocGenerator.download('generated.pdf');
+    // pdfDocGenerator.open(); // Opens in a new tab
     // pdfDocGenerator.print(); 
 
   });
