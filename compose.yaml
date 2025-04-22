@@ -4,24 +4,40 @@ networks:
 
 services:
   app:
-    container_name: redcanyon
+    container_name: redcanyon-app
     build:
+      context: ./red-canyon-web
       dockerfile: Dockerfile
       args:
         # - BUILDPLATFORM=linux/amd64
         - BUILDPLATFORM=linux/arm64
     ports:
       - 5173:5173
+    expose:
+      - 4200
+    volumes:
+      - ./red-canyon-web:/project/app
+    networks:
+      - redcanyon-net
+    env_file:
+      - ./red-canyon-web/.env
+  server:
+    container_name: redcanyon-api
+    build:
+      context: ./server
+      dockerfile: be.Dockerfile
+      args:
+        # - BUILDPLATFORM=linux/amd64
+        - BUILDPLATFORM=linux/arm64
+    ports:
       - 4200:4200
       - 6379:6379
       - 8005:8001
     expose:
       - 4200
-      - 6379
     volumes:
-      - ./red-canyon-web:/project/app
       - ./server:/project/server
     networks:
       - redcanyon-net
     env_file:
-      - .env
+      - ./server/.env
